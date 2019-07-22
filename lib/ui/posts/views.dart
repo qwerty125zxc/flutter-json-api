@@ -22,6 +22,8 @@ class PostView extends StatelessWidget {
 
   PostView(this.post, {Key key}) : super(key: key);
 
+  _isEdited() => post.created == post.updated ? "" : " (edited)";
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -32,18 +34,18 @@ class PostView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                FlatButton(child: Text(post.user_id.toString()), onPressed: () {
+                FlatButton(textTheme: ButtonTextTheme.accent, child: Text(post.userId.toString()), onPressed: () {
                   //TODO: show user nickname; redirect to his posts when onPressed
                 }),
+                Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
               ],
             ),
             Row(
               children: <Widget>[
                 Text(post.title,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Container(width: 200),
-                Text(post.created)
               ],
             ),
             Row(

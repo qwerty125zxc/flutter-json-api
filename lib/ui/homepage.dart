@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
-import 'package:flutter_api/ui/posts.dart';
+import 'package:flutter_api/ui/posts/views.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
@@ -21,6 +21,7 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.account_box),
             color: Colors.white,
             onPressed: () {
+              //TODO: redirect to current user's profile
               Fluttertoast.showToast(msg: 'you pidor');
             },
           ),
@@ -36,14 +37,14 @@ class HomePage extends StatelessWidget {
               : Center(child: CircularProgressIndicator());
         },
       ),
-
-      //old plug
-      /*body: PostsList(
-        posts: [
-          Post(title: "title0", body: "post text 0"),
-          Post(title: "title1", body: "post text 1"),
-        ],
-      ),*/
+      floatingActionButton: FloatingActionButton.extended(
+          icon: Icon(Icons.add),
+          label: Text('new post'),
+          highlightElevation: 20.0,
+          onPressed: () {
+          Navigator.pushNamed(context, 'posts/new');
+          }
+      ),
     );
   }
 
@@ -55,7 +56,6 @@ class HomePage extends StatelessWidget {
   Future<List<Post>> fetchPosts(http.Client client) async {
     final response =
     await client.get('https://milioners.herokuapp.com/api/v1/posts');
-    debugPrint('RESPONSE: ${response.body}');
     return parsePhotos(response.body);
   }
 
