@@ -1,5 +1,5 @@
 name: flutter_api
-description: A Flutter application with has access to external Rails API.
+description: A Flutter application which has access to external Rails API.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43

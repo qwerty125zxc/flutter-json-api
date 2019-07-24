@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  List<Post> parsePhotos(String responseBody) {
+  List<Post> parsePosts(String responseBody) {
     final Map<String, dynamic> jsonResponse = convert.jsonDecode(responseBody);
     return jsonResponse["posts"].map<Post>((json) => Post.fromJson(json)).toList();
   }
@@ -56,7 +56,7 @@ class HomePage extends StatelessWidget {
   Future<List<Post>> fetchPosts(http.Client client) async {
     final response =
     await client.get('https://milioners.herokuapp.com/api/v1/posts');
-    return parsePhotos(response.body);
+    return parsePosts(response.body);
   }
 
 }
