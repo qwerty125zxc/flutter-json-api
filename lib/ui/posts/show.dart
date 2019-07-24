@@ -26,7 +26,7 @@ class PostShow extends StatelessWidget {
                   RaisedButton(
                     textTheme: ButtonTextTheme.accent,
                     child: Text("EDIT"),
-                    onPressed: () {}, //TODO: redirect
+                    onPressed: () => Navigator.pushNamed(context, 'posts/edit', arguments: post)
                   ),
                   RaisedButton(
                     textTheme: ButtonTextTheme.accent,
