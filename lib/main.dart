@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/ui/homepage.dart';
+import 'package:flutter_api/ui/posts/form_edit.dart';
 import 'package:flutter_api/ui/posts/form_new.dart';
 import 'package:flutter_api/ui/posts/show.dart';
 
@@ -22,6 +23,7 @@ class APIApp extends StatelessWidget {
         '/': (context) => HomePage(),
         'posts/new': (context) => PostCreateForm(),
         'posts/show': (context) => PostShow(),
+        'posts/edit': (context) => PostEditForm(),
       },
     );
   }

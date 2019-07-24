@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/classes/post.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-class PostCreateForm extends StatefulWidget {
+class PostEditForm extends StatefulWidget {
   @override
-  createState() => PostCreateFormState();
+  createState() => PostEditFormState();
 }
 
-class PostCreateFormState extends State<PostCreateForm> {
+class PostEditFormState extends State<PostEditForm> {
+  Post post;
+
   static final _formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
@@ -16,35 +19,34 @@ class PostCreateFormState extends State<PostCreateForm> {
   final _titleNode = FocusNode();
   final _bodyNode = FocusNode();
 
-  PostCreateFormState();
+  PostEditFormState();
 
   @override
   Widget build(BuildContext context) {
 
+    post = ModalRoute.of(context).settings.arguments;
+    _titleController.text = post.title;
+    _bodyController.text = post.body;
+
     submit() async {
-      var url = 'https://milioners.herokuapp.com/api/v1/posts';
+      var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
       var headers = {'Content-Type': 'application/json'};
-      try {
-        var response = await http.post(url, headers: headers,
-            body: convert.jsonEncode({
-              "post": {
-                "user_id": 1,
-                "title": _titleController.text,
-                "body": _bodyController.text
-              }
-            }));
-        if (response.statusCode == 201)
+      //try {
+        var response = await http.put(url, headers: headers,
+            body: convert.jsonEncode({'title': _titleController.text, 'body': _bodyController.text})
+        );
+        if (response.statusCode == 200)
           showDialog(context: context,
             builder: (context) {
               return AlertDialog(
                 title: Text('Success!'),
-                content: Text('Post was successfully uploaded.'),
+                content: Text('Post was successfully edited.'),
                 actions: <Widget>[
                   FlatButton(
                     child: const Text('OK'),
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pop(context);
+                      Navigator.popAndPushNamed(context, 'posts/show', arguments: post);
                     },
                   )
                 ],
@@ -60,20 +62,20 @@ class PostCreateFormState extends State<PostCreateForm> {
                 );
               }
           );
-      } catch(SocketException) {
+      /*} catch(e) {
         showDialog(context: context,
             builder: (context) {
               return AlertDialog(
-                content: Text("Please check your Internet connection."),
+                content: Text("Please check your Internet connection.}"),
               );
             }
         );
-      }
+      }*/
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("New Post")
+          title: Text("Edit Post")
       ),
       body: Center(
         child: Form(
