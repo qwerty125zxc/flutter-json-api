@@ -17,7 +17,7 @@ class APIApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        'posts/new': (context) => PostForm(),
+        'posts/new': (context) => PostCreateForm(),
       },
     );
   }

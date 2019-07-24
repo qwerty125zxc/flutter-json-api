@@ -3,20 +3,25 @@ import 'package:flutter_api/classes/post.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-class PostForm extends StatelessWidget {
+class PostCreateForm extends StatefulWidget {
+  @override
+  createState() => PostCreateFormState();
+}
+
+class PostCreateFormState extends State<PostCreateForm> {
   static final _formKey = GlobalKey<FormState>();
-  final Post post;
 
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
 
-  PostForm([this.post]);
+  final _titleNode = FocusNode();
+  final _bodyNode = FocusNode();
+
+  final Post post;
+  PostCreateFormState([this.post]);
 
   @override
   Widget build(BuildContext context) {
-
-    var _titleNode = FocusNode();
-    var _bodyNode = FocusNode();
 
     submit() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts';
@@ -52,9 +57,7 @@ class PostForm extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            post == null ? "New Post" : post.title,
-        )
+        title: Text("New Post")
       ),
       body: Center(
         child: Form(
@@ -70,6 +73,7 @@ class PostForm extends StatelessWidget {
                     autofocus: true,
                     focusNode: _titleNode,
                     keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     controller: _titleController,
                     onFieldSubmitted: (term) {
@@ -88,6 +92,7 @@ class PostForm extends StatelessWidget {
                     focusNode: _bodyNode,
                     decoration: InputDecoration(hintText: 'body'),
                     keyboardType: TextInputType.multiline,
+                    textCapitalization: TextCapitalization.sentences,
                     maxLines: null,
                     controller: _bodyController,
                     validator: (value) {
