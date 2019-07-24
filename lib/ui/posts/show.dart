@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
+import 'package:http/http.dart' as http;
 
 class PostShow extends StatelessWidget {
 
@@ -10,6 +11,67 @@ class PostShow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     post = ModalRoute.of(context).settings.arguments;
+
+    delete() async {
+      var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
+      var headers = {'Content-Type': 'application/json'};
+      try {
+        var response = await http.delete(url, headers: headers);
+        if (response.statusCode == 200)
+          showDialog(context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Success'),
+                content: Text('Post was successfully deleted.'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+                    },
+                  )
+                ],
+              );
+            },
+            barrierDismissible: false,
+          );
+        else
+          showDialog(context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("you failed me"),
+                );
+              }
+          );
+      } catch(e) {
+        showDialog(context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text("Please check your Internet connection."),
+              );
+            }
+        );
+      }
+    }
+
+    deletePrompt() {
+      showDialog(context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Are you sure?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("NO"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            FlatButton(
+              child: Text("YES"),
+              onPressed: () => delete(),
+            ),
+          ],
+        );
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -22,7 +84,7 @@ class PostShow extends StatelessWidget {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  //TODO: handle visibility with Visibility widget & making PostShow a StatefulWidget.
+                  //TODO: handle visibility by wrapping with Visibility widget & making PostShow a StatefulWidget.
                   RaisedButton(
                     textTheme: ButtonTextTheme.accent,
                     child: Text("EDIT"),
@@ -31,7 +93,7 @@ class PostShow extends StatelessWidget {
                   RaisedButton(
                     textTheme: ButtonTextTheme.accent,
                     child: Text("DELETE"),
-                    onPressed: () {}, //TODO: do this shit.
+                    onPressed: () => deletePrompt(),
                   ),
                 ],
               ),

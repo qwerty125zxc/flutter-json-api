@@ -43,8 +43,7 @@ class PostCreateFormState extends State<PostCreateForm> {
                   FlatButton(
                     child: const Text('OK'),
                     onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
+                      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
                     },
                   )
                 ],
@@ -58,7 +57,7 @@ class PostCreateFormState extends State<PostCreateForm> {
                 return AlertDialog(
                   title: Text("you failed me"),
                 );
-              }
+              },
           );
       } catch(e) {
         showDialog(context: context,

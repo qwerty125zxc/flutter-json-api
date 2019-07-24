@@ -47,7 +47,7 @@ class PostEditFormState extends State<PostEditForm> {
                     onPressed: () {
                       Navigator.pop(context);
                       Navigator.pop(context);
-                      //TODO: fix the bug with an old looking page
+                      //TODO: fix the bug with an old looking page; create Post.findById method
                     },
                   )
                 ],
