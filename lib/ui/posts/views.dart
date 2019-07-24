@@ -27,33 +27,43 @@ class PostView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FlatButton(textTheme: ButtonTextTheme.accent, child: Text(post.userId.toString()), onPressed: () {
-                  //TODO: show user nickname; redirect to his posts when onPressed
-                }),
-                Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Text(post.title,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Text(post.body, style: TextStyle(fontSize: 14)),
-              ],
-            ),
-          ],
+      child: InkWell(
+        splashColor: Colors.blue,
+        onTap: () {
+          Navigator.pushNamed(context, 'posts/show', arguments: post);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  FlatButton(textTheme: ButtonTextTheme.accent, child: Text(post.userId.toString()), onPressed: () {
+                    //TODO: show user nickname; redirect to his posts when onPressed
+                  }),
+                  Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Text(post.title,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Text(
+                    post.body,
+                    style: TextStyle(fontSize: 14),
+                    maxLines: 4,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

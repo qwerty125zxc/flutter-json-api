@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/classes/post.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -17,8 +16,7 @@ class PostCreateFormState extends State<PostCreateForm> {
   final _titleNode = FocusNode();
   final _bodyNode = FocusNode();
 
-  final Post post;
-  PostCreateFormState([this.post]);
+  PostCreateFormState();
 
   @override
   Widget build(BuildContext context) {

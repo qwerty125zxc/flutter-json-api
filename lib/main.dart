@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/ui/homepage.dart';
 import 'package:flutter_api/ui/posts/form_new.dart';
+import 'package:flutter_api/ui/posts/show.dart';
 
 void main() => runApp(APIApp());
 
 class APIApp extends StatelessWidget {
-  // This widget is the root of your application.
+
+  //TODO: static User currentUser;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,6 +21,7 @@ class APIApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         'posts/new': (context) => PostCreateForm(),
+        'posts/show': (context) => PostShow(),
       },
     );
   }
