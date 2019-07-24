@@ -97,7 +97,7 @@ class PostCreateFormState extends State<PostCreateForm> {
                     },
                     decoration: InputDecoration(hintText: 'title'),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value.trim().isEmpty) {
                         return 'Enter some text';
                       }
                       return null;
@@ -111,7 +111,7 @@ class PostCreateFormState extends State<PostCreateForm> {
                     maxLines: null,
                     controller: _bodyController,
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value.trim().isEmpty) {
                         return 'Enter some text';
                       }
                       return null;
