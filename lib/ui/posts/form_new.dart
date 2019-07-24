@@ -26,33 +26,53 @@ class PostCreateFormState extends State<PostCreateForm> {
     submit() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts';
       var headers = {'Content-Type': 'application/json'};
-      var response = await http.post(url, headers: headers, body: convert.jsonEncode({"post": {"user_id": 1, "title": _titleController.text, "body": _bodyController.text}}));
-      debugPrint(response.statusCode.toString());
-      debugPrint(response.body);
-      if (response.statusCode == 201) showDialog(context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Success!'),
-            content: Text('Post was successfully uploaded.'),
-            actions: <Widget>[
-              FlatButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
+      try {
+        var response = await http.post(url, headers: headers,
+            body: convert.jsonEncode({
+              "post": {
+                "user_id": 1,
+                "title": _titleController.text,
+                "body": _bodyController.text
+              }
+            }));
+        debugPrint(response.statusCode.toString());
+        debugPrint(response.body);
+        if (response.statusCode == 201)
+          showDialog(context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Success!'),
+                content: Text('Post was successfully uploaded.'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              );
+            },
+            barrierDismissible: false,
           );
-        },
-        barrierDismissible: false,
-      );
-      else showDialog(context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("you failed me"),
+        else
+          showDialog(context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("you failed me"),
+                );
+              }
           );
-        }
-      );
+      } catch(SocketException) {
+        showDialog(context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text("Please check your Internet connection."),
+              );
+            }
+        );
+      }
     }
 
     return Scaffold(

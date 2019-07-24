@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/ui/homepage.dart';
-import 'package:flutter_api/ui/posts/form.dart';
+import 'package:flutter_api/ui/posts/form_new.dart';
 
 void main() => runApp(APIApp());
 
