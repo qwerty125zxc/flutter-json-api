@@ -46,8 +46,6 @@ class PostEditFormState extends State<PostEditForm> {
                     child: const Text('OK'),
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pop(context);
-                      //TODO: fix the bug with an old looking page; create Post.findById method
                     },
                   )
                 ],

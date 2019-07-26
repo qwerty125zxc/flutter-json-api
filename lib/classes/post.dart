@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+
 class Post {
   int id, userId;
   String title, body, created, updated;
@@ -15,9 +19,10 @@ class Post {
     );
   }
 
-  static Post findById(int id)
+  static Future<Post> findById(int id) async
   {
-    //return Post.fromJson(json)
-    //'https://milioners.herokuapp.com/api/v1/posts/${post.id}'
+    var response = await http.get('https://milioners.herokuapp.com/api/v1/posts/$id');
+    debugPrint(convert.jsonEncode(response.body));
+    return Post.fromJson(convert.jsonDecode(response.body));
   }
 }
