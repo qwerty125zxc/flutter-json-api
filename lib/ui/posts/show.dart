@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 class PostShow extends StatelessWidget {
 
@@ -39,7 +40,7 @@ class PostShow extends StatelessWidget {
           showDialog(context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: Text("you failed me"),
+                  title: Text(convert.jsonDecode(response.body)['errors'].toString()),
                 );
               }
           );

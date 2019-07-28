@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
 import 'package:flutter_api/ui/posts/views.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 
@@ -21,8 +20,7 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.account_box),
             color: Colors.white,
             onPressed: () {
-              //TODO: redirect to current user's profile
-              Fluttertoast.showToast(msg: 'you pidor');
+              Navigator.pushNamed(context, 'users/new');
             },
           ),
         ],
@@ -42,7 +40,7 @@ class HomePage extends StatelessWidget {
           label: Text('new post'),
           highlightElevation: 20.0,
           onPressed: () {
-          Navigator.pushNamed(context, 'posts/new');
+            Navigator.pushNamed(context, 'posts/new');
           }
       ),
     );

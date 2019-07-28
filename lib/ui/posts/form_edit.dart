@@ -57,7 +57,7 @@ class PostEditFormState extends State<PostEditForm> {
           showDialog(context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: Text("you failed me"),
+                  title: Text(convert.jsonDecode(response.body)['errors'].toString()),
                 );
               }
           );
