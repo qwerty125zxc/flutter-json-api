@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
+import 'package:flutter_api/classes/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -30,9 +31,8 @@ class PostEditFormState extends State<PostEditForm> {
 
     submit() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
-      var headers = {'Content-Type': 'application/json'};
       try {
-        var response = await http.put(url, headers: headers,
+        var response = await http.put(url, headers: User.headers,
             body: convert.jsonEncode({'title': _titleController.text, 'body': _bodyController.text})
         );
         if (response.statusCode == 200)

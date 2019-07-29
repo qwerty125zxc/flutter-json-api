@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/classes/user.dart';
+import 'dart:convert' as convert;
 
 class SignIn extends StatefulWidget {
   @override
@@ -14,11 +16,52 @@ class SignInState extends State<SignIn> {
   final _emailNode = FocusNode();
   final _passwordNode = FocusNode();
 
+  confirm(email, pass) async {
+    var response = await User.signIn(email, pass);
+    var body = convert.jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Success""${body.toString()}"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("OK"),
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false),
+              )
+            ],
+          );
+        },
+      );
+    }
+    else {
+      var messages = body["errors"]["full_messages"].toString();
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text(messages.substring(1, messages.length-1)),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("OK"),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          );
+        },
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: Text('Sign In'),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -65,13 +108,29 @@ class SignInState extends State<SignIn> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: RaisedButton(
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-
-                    }
-                  },
-                  child: Text('Submit'),
+                child: Row(
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          confirm(_emailController.text, _passwordController.text);
+                        }
+                      },
+                      child: Text('Go'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Row(
+                        children: <Widget>[
+                          Text('  or  '),
+                          FlatButton(
+                            child: Text("Sign Up"),
+                            onPressed: () => Navigator.pushNamed(context, 'users/new'),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/classes/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -23,9 +24,8 @@ class PostCreateFormState extends State<PostCreateForm> {
 
     submit() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts';
-      var headers = {'Content-Type': 'application/json'};
       try {
-        var response = await http.post(url, headers: headers,
+        var response = await http.post(url, headers: User.headers,
             body: convert.jsonEncode({
               "post": {
                 "user_id": 1,

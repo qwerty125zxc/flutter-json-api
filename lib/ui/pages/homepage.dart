@@ -20,7 +20,8 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.account_box),
             color: Colors.white,
             onPressed: () {
-              Navigator.pushNamed(context, 'users/new');
+              //TODO: if (User.signedIn) Navigator.pushNamed(context, 'users/show'); else
+              Navigator.pushNamed(context, 'users/login');
             },
           ),
         ],
