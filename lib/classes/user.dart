@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'auth_headers.dart';
 
 class User {
   int id;
@@ -8,9 +10,10 @@ class User {
   User(this.id, this.email);
 
   static User currentUser;
+  static bool get signedIn => currentUser == null;
   static var headers;
 
-  static void _saveUser(http.Response response) {
+  static void _saveUser(http.Response response, String password) {
     var h = response.headers;
     headers = {
       'Content-Type': 'application/json',
@@ -20,12 +23,24 @@ class User {
       'expiry': h['expiry'],
       'uid': h['uid']
     };
-    print(jsonEncode(headers));
 
     currentUser = new User(
         jsonDecode(response.body)['data']['id'],
         jsonDecode(response.body)['data']['email']
     );
+
+    saveHeaders(jsonEncode(headers));
+    savePassword(password);
+  }
+
+  static void loginAtStartup() async {
+    var h = await getHeaders();
+    headers = jsonDecode(h);
+    var pass = await getPassword();
+    http.Response response = await signIn(headers['uid'], pass);
+    if (response.statusCode != 200) {
+      Fluttertoast.showToast(msg: "Cannot log in to your account");
+    }
   }
 
   static Future<http.Response> signUp(email, pass, passConfirm) async {
@@ -35,7 +50,7 @@ class User {
       "password": pass,
       "password_confirmation": passConfirm
     });
-    _saveUser(response);
+    _saveUser(response, pass);
     return response;
   }
 
@@ -45,7 +60,7 @@ class User {
       "email": email,
       "password": pass,
     });
-    _saveUser(response);
+    _saveUser(response, pass);
     return response;
   }
   //findById

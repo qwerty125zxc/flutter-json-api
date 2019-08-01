@@ -6,15 +6,15 @@ import 'package:flutter_api/ui/posts/show.dart';
 import 'package:flutter_api/ui/users/sign_in.dart';
 import 'package:flutter_api/ui/users/sign_up.dart';
 
+import 'classes/user.dart';
+
 void main() => runApp(APIApp());
 
 class APIApp extends StatelessWidget {
 
-  //TODO: static User currentUser;
-
   @override
   Widget build(BuildContext context) {
-
+    User.loginAtStartup();
     return MaterialApp(
       title: 'API App',
       theme: ThemeData(

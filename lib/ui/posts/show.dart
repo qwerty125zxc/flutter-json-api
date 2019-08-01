@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
+import 'package:flutter_api/classes/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -15,9 +16,8 @@ class PostShow extends StatelessWidget {
 
     delete() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
-      var headers = {'Content-Type': 'application/json'};
       try {
-        var response = await http.delete(url, headers: headers);
+        var response = await http.delete(url, headers: User.headers);
         if (response.statusCode == 200)
           showDialog(context: context,
             builder: (context) {

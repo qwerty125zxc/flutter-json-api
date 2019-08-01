@@ -45,7 +45,7 @@ class PostEditFormState extends State<PostEditForm> {
                   FlatButton(
                     child: const Text('OK'),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
                     },
                   )
                 ],
