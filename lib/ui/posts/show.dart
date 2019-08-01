@@ -83,20 +83,22 @@ class PostShow extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  //TODO: handle visibility by wrapping with Visibility widget & making PostShow a StatefulWidget.
-                  RaisedButton(
-                    textTheme: ButtonTextTheme.accent,
-                    child: Text("EDIT"),
-                    onPressed: () => Navigator.pushNamed(context, 'posts/edit', arguments: post)
-                  ),
-                  RaisedButton(
-                    textTheme: ButtonTextTheme.accent,
-                    child: Text("DELETE"),
-                    onPressed: () => deletePrompt(),
-                  ),
-                ],
+              Visibility(
+                visible: User.signedIn && post.userId == User.current.id,
+                child: Row(
+                  children: <Widget>[
+                    RaisedButton(
+                      textTheme: ButtonTextTheme.accent,
+                      child: Text("EDIT"),
+                      onPressed: () => Navigator.pushNamed(context, 'posts/edit', arguments: post)
+                    ),
+                    RaisedButton(
+                      textTheme: ButtonTextTheme.accent,
+                      child: Text("DELETE"),
+                      onPressed: () => deletePrompt(),
+                    ),
+                  ],
+                ),
               ),
               Row(
                 children: <Widget>[

@@ -37,7 +37,8 @@ class SignInState extends State<SignIn> {
       );
     }
     else {
-      var messages = body["errors"]["full_messages"].toString();
+      debugPrint(response.body);
+      var messages = body["errors"].toString();
       showDialog(
         context: context,
         builder: (context) {
