@@ -118,12 +118,6 @@ class PostShow extends StatelessWidget {
                       ),
                       Row(
                         children: <Widget>[
-                          Text(post.title,
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
                           Text(
                             post.body,
                             style: TextStyle(fontSize: 14),

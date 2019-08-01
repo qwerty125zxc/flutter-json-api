@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.account_box),
             color: Colors.white,
             onPressed: () {
-              if (User.signedIn) Navigator.pushNamed(context, 'users/show'); else
+              if (User.signedIn) Navigator.pushNamed(context, 'users/show', arguments: User.current); else
               Navigator.pushNamed(context, 'users/login');
             },
           ),
@@ -49,15 +49,14 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  List<Post> parsePosts(String responseBody) {
+  static List<Post> parsePosts(String responseBody) {
     final Map<String, dynamic> jsonResponse = convert.jsonDecode(responseBody);
     return jsonResponse["posts"].map<Post>((json) => Post.fromJson(json)).toList();
   }
 
-  Future<List<Post>> fetchPosts(http.Client client) async {
+  static Future<List<Post>> fetchPosts(http.Client client) async {
     final response =
     await client.get('https://milioners.herokuapp.com/api/v1/posts');
     return parsePosts(response.body);
   }
-
 }
