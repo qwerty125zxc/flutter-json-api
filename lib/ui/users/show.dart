@@ -57,7 +57,7 @@ class UserPage extends StatelessWidget {
 
     Widget buttons() {
       return Visibility(
-        visible: user.id == User.current.id,
+        visible: User.signedIn && user.id == User.current.id,
         child: Row(
           children: <Widget>[
             RaisedButton(

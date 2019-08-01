@@ -96,6 +96,7 @@ class User {
       'uid': headers['uid']
     };
     saveCredentials("", "");
+    current = null;
     return await http.delete(url, headers: logoutHeaders);
   }
 }

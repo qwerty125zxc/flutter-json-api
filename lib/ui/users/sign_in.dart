@@ -25,7 +25,7 @@ class SignInState extends State<SignIn> {
         barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
-            title: Text("Success""${body.toString()}"),
+            title: Text("Success"),
             actions: <Widget>[
               FlatButton(
                 child: Text("OK"),
