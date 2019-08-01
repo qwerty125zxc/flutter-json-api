@@ -74,7 +74,17 @@ class User {
     return response;
   }
 
-  //TODO: findById
+  static Future<User> findById (int id) async{
+    var url = 'http://milioners.herokuapp.com/api/v1/users/$id';
+    var response = await http.get(url);
+    var body = jsonDecode(response.body);
+    if (body['user'] == null) {
+      return User(-1, "");
+    }
+    else {
+      return User(body['user']['id'], body['user']['email']);
+    }
+  }
 
   static Future<http.Response> logout() async{
     var url = 'https://milioners.herokuapp.com/api/v1/auth/sign_out';

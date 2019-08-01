@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
+import 'package:flutter_api/classes/user.dart';
 
 class PostsList extends StatelessWidget {
   final List<Post> posts;
@@ -41,7 +42,7 @@ class PostView extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  FlatButton(textTheme: ButtonTextTheme.accent, child: Text(post.userId.toString()), onPressed: () {
+                  FlatButton(textTheme: ButtonTextTheme.accent, child: Email(post.userId), onPressed: () {
                     //TODO: show user nickname; redirect to his posts when onPressed
                   }),
                   Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
@@ -68,4 +69,16 @@ class PostView extends StatelessWidget {
       ),
     );
   }
+
+  static Widget Email (int id) {
+    return FutureBuilder<User>(
+      future: User.findById(id),
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? Text(snapshot.data.email)
+            : Container(width: 0.0, height: 0.0);
+      },
+    );
+  }
 }
+

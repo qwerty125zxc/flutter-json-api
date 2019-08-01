@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
 import 'package:flutter_api/classes/user.dart';
+import 'package:flutter_api/ui/posts/views.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -109,7 +110,7 @@ class PostShow extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          FlatButton(textTheme: ButtonTextTheme.primary, child: Text(post.userId.toString()), onPressed: () {
+                          FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Email(post.userId), onPressed: () {
                             //TODO: show user nickname; redirect to his posts when onPressed
                           }),
                           Text('created:\t\t' + post.created.substring(0,10) + ', ' + post.created.substring(11,16) + _isEdited()),
