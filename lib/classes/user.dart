@@ -6,7 +6,6 @@ import 'auth.dart';
 class User {
   int id;
   String email;
-  //static bool _logAtStartup = false; //TODO: make it a getter & check if files are null
 
   User(this.id, this.email);
 
@@ -36,9 +35,13 @@ class User {
 
   static void loginAtStartup(context) async {
       var credentials = await getCredentials();
-      http.Response response = await signIn(credentials['email'], credentials['password']);
-      if (response.statusCode != 200) {
-        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Cannot log in your account. Pkease try again")));
+      var email = credentials['email']; var password = credentials['password'];
+      if (email != "" && password != "") {
+        http.Response response = await signIn(email, password);
+        if (response.statusCode != 200) {
+          Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text("Cannot log in your account. Pkease try again")));
+        }
       }
   }
 
@@ -82,6 +85,7 @@ class User {
       'expiry': headers['expiry'],
       'uid': headers['uid']
     };
+    saveCredentials("", "");
     return await http.delete(url, headers: logoutHeaders);
   }
 }

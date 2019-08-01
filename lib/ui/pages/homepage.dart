@@ -23,7 +23,6 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               if (User.signedIn) Navigator.pushNamed(context, 'users/show'); else
               Navigator.pushNamed(context, 'users/login');
-              //TODO: test above if statement
             },
           ),
         ],
@@ -43,9 +42,8 @@ class HomePage extends StatelessWidget {
           label: Text('new post'),
           highlightElevation: 20.0,
           onPressed: () {
-            if (User.signedIn) Navigator.pushNamed(context, 'users/login'); else
-            Navigator.pushNamed(context, 'posts/new');
-            //TODO: test above if statement
+            if (User.signedIn) Navigator.pushNamed(context, 'posts/new'); else
+              Navigator.pushNamed(context, 'users/login');
           }
       ),
     );
