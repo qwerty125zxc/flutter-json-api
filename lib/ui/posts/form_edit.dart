@@ -31,7 +31,7 @@ class PostEditFormState extends State<PostEditForm> {
 
     submit() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
-      try {
+      //try {
         var response = await http.put(url, headers: User.headers,
             body: convert.jsonEncode({'title': _titleController.text, 'body': _bodyController.text})
         );
@@ -61,15 +61,15 @@ class PostEditFormState extends State<PostEditForm> {
                 );
               }
           );
-      } catch(e) {
+      /*} catch(e) {
         showDialog(context: context,
             builder: (context) {
               return AlertDialog(
-                content: Text("Please check your Internet connection."),
+                content: Text("(Please check your Internet connection.)\n${e.toString()}"),
               );
             }
         );
-      }
+      }*/
     }
 
     return Scaffold(

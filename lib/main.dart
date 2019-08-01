@@ -14,7 +14,7 @@ class APIApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    User.loginAtStartup();
+    User.loginAtStartup(context);
     return MaterialApp(
       title: 'API App',
       theme: ThemeData(

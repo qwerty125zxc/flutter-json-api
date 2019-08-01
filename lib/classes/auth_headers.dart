@@ -8,36 +8,22 @@ Future<String> get _localPath async {
   return directory.path;
 }
 
-Future<File> get _fileHeaders async {
+Future<File> get _file async {
   final path = await _localPath;
-  return File('$path/data.txt');
+  return File('$path/credentials.txt');
 }
 
-Future<File> get _filePassword async {
-  final path = await _localPath;
-  return File('$path/password.txt');
+Future<File> saveCredentials(String email, String password) async {
+  final file = await _file;
+  return file.writeAsString('$email $password', mode: FileMode.write, encoding: utf8);
 }
 
-Future<File> saveHeaders(String content) async {
-  final file = await _fileHeaders;
-  return file.writeAsString(content, mode: FileMode.write);
-}
-
-Future<File> savePassword(String content) async {
-  final file = await _filePassword;
-  return file.writeAsString(content, mode: FileMode.write);
-}
-
-Future<String> getHeaders() async {
+Future<Map<String, String>> getCredentials() async {
   String contents;
-  final file = await _fileHeaders;
-  contents = await file.readAsString();
-  return contents;
+  final file = await _file;
+  contents = await file.readAsString(encoding: utf8);
+  print(contents);
+  var list = contents.split(" ");
+  return {'email': list[0], 'password': list[1]};
 }
 
-Future<String> getPassword() async {
-  String contents;
-  final file = await _fileHeaders;
-  contents = await file.readAsString();
-  return contents;
-}
