@@ -3,6 +3,7 @@ import 'package:flutter_api/ui/pages/homepage.dart';
 import 'package:flutter_api/ui/posts/form_edit.dart';
 import 'package:flutter_api/ui/posts/form_new.dart';
 import 'package:flutter_api/ui/posts/show.dart';
+import 'package:flutter_api/ui/users/show.dart';
 import 'package:flutter_api/ui/users/sign_in.dart';
 import 'package:flutter_api/ui/users/sign_up.dart';
 
@@ -29,6 +30,7 @@ class APIApp extends StatelessWidget {
         'posts/edit': (context) => PostEditForm(),
         'users/new': (context) => SignUp(),
         'users/login': (context) => SignIn(),
+        'users/show': (context) => UserPage(),
       },
     );
   }

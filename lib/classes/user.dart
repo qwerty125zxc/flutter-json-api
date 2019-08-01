@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'auth_headers.dart';
+import 'auth.dart';
 
 class User {
   int id;
@@ -10,8 +10,8 @@ class User {
 
   User(this.id, this.email);
 
-  static User currentUser;
-  static bool get signedIn => currentUser == null;
+  static User current;
+  static bool get signedIn => current != null;
   static Map<String, String> headers;
 
   static void _saveHeaders(http.Response response) {
@@ -28,7 +28,7 @@ class User {
 
   static void _saveCurrentUser(String responseBody) {
     var body = jsonDecode(responseBody);
-    currentUser = new User(
+    current = new User(
         body['data']['id'],
         body['data']['email']
     );
@@ -70,5 +70,18 @@ class User {
     }
     return response;
   }
-  //findById
+
+  //TODO: findById
+
+  static Future<http.Response> logout() async{
+    var url = 'https://milioners.herokuapp.com/api/v1/auth/sign_out';
+    var logoutHeaders = {
+      'access-token': headers['access-token'],
+      'token-type': headers['token-type'],
+      'client': headers['client'],
+      'expiry': headers['expiry'],
+      'uid': headers['uid']
+    };
+    return await http.delete(url, headers: logoutHeaders);
+  }
 }

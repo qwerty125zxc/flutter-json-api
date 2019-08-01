@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/post.dart';
+import 'package:flutter_api/classes/user.dart';
 import 'package:flutter_api/ui/posts/views.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
@@ -20,8 +21,9 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.account_box),
             color: Colors.white,
             onPressed: () {
-              //TODO: if (User.signedIn) Navigator.pushNamed(context, 'users/show'); else
+              if (User.signedIn) Navigator.pushNamed(context, 'users/show'); else
               Navigator.pushNamed(context, 'users/login');
+              //TODO: test above if statement
             },
           ),
         ],
@@ -41,7 +43,9 @@ class HomePage extends StatelessWidget {
           label: Text('new post'),
           highlightElevation: 20.0,
           onPressed: () {
+            if (User.signedIn) Navigator.pushNamed(context, 'users/login'); else
             Navigator.pushNamed(context, 'posts/new');
+            //TODO: test above if statement
           }
       ),
     );
