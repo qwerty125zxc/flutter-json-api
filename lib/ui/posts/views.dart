@@ -42,7 +42,7 @@ class PostView extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  FlatButton(textTheme: ButtonTextTheme.accent, child: Email(post.userId), onPressed: () async{
+                  FlatButton(textTheme: ButtonTextTheme.accent, child: Nickname(post.userId), onPressed: () async{
                     await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
                   }),
                   Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
@@ -70,13 +70,24 @@ class PostView extends StatelessWidget {
     );
   }
 
-  static Widget Email (int id) {
+  static Widget Nickname (int id) {
     return FutureBuilder<User>(
       future: User.findById(id),
       builder: (context, snapshot) {
-        return snapshot.hasData
-            ? Text(snapshot.data.email)
-            : Container(width: 0.0, height: 0.0);
+        if (snapshot.hasData) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Image.network(snapshot.data.image, headers: User.headers, height: 32.0,),
+              Container(width: 8.0),
+              Text(snapshot.data.nickname),
+            ],
+          );
+        } else {
+          return Container(width: 0.0, height: 0.0);
+        }
       },
     );
   }

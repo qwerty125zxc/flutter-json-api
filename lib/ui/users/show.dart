@@ -64,7 +64,7 @@ class UserPage extends StatelessWidget {
               textTheme: ButtonTextTheme.accent,
               child: Text("PROFILE"),
               onPressed: () {
-                //TODO: implement method
+                Navigator.pushNamed(context, 'users/edit', arguments: user);
               },
             ),
             RaisedButton(
@@ -79,7 +79,7 @@ class UserPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(user.email),
+          title: Text(user.nickname),
           actions: <Widget>[
             buttons()
           ],

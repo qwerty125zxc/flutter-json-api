@@ -6,7 +6,7 @@ import 'package:flutter_api/ui/posts/show.dart';
 import 'package:flutter_api/ui/users/show.dart';
 import 'package:flutter_api/ui/users/sign_in.dart';
 import 'package:flutter_api/ui/users/sign_up.dart';
-
+import 'ui/users/edit.dart';
 import 'classes/user.dart';
 
 void main() => runApp(APIApp());
@@ -31,6 +31,7 @@ class APIApp extends StatelessWidget {
         'users/new': (context) => SignUp(),
         'users/login': (context) => SignIn(),
         'users/show': (context) => UserPage(),
+        'users/edit': (context) => UserEdit(),
       },
     );
   }

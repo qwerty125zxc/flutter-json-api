@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/classes/user.dart';
+import 'package:flutter_api/classes/auth.dart';
 import 'dart:convert' as convert;
 
-class SignUp extends StatefulWidget {
+class UserEdit extends StatefulWidget {
   @override
-  createState() => SignUpState();
+  createState() => UserEditState();
 }
 
-class SignUpState extends State<SignUp> {
+class UserEditState extends State<UserEdit> {
+  User user;
+
   static final _formKey = GlobalKey<FormState>();
 
   final _nicknameController = TextEditingController();
@@ -15,17 +18,17 @@ class SignUpState extends State<SignUp> {
   final _nameController = TextEditingController();
   final _imageController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _passwordConfirmationController = TextEditingController();
+  final _currentPasswordController = TextEditingController();
 
   final _nicknameNode = FocusNode();
   final _emailNode = FocusNode();
   final _nameNode = FocusNode();
   final _imageNode = FocusNode();
   final _passwordNode = FocusNode();
-  final _passwordConfirmationNode = FocusNode();
+  final _currentPasswordNode = FocusNode();
 
-  confirm(nickname, email, name, image, pass, passConfirm) async {
-    var response = await User.signUp(nickname, email, name, image, pass, passConfirm);
+  confirm(email, image, nickname, name, pass, currPass) async {
+    var response = await User.edit(email, image, nickname, name, pass, currPass);
     var body = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
       showDialog(
@@ -63,9 +66,21 @@ class SignUpState extends State<SignUp> {
       );
     }
   }
+  void _getPassword() async {
+    var creds = await getCredentials();
+    _passwordController.text = creds['password'];
+  }
 
   @override
   Widget build(BuildContext context) {
+    user = ModalRoute.of(context).settings.arguments;
+
+    _nicknameController.text = user.nickname;
+    _nameController.text = user.name;
+    _imageController.text = user.image;
+    _emailController.text = user.email;
+    _getPassword();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Sign Up'),
@@ -81,22 +96,35 @@ class SignUpState extends State<SignUp> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextFormField(
-                    autofocus: true,
-                    focusNode: _nicknameNode,
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    controller: _nicknameController,
-                    onFieldSubmitted: (term) {
-                      _nicknameNode.unfocus();
-                      FocusScope.of(context).requestFocus(_emailNode);
-                    },
-                    decoration: InputDecoration(hintText: 'nickname'),
+                    focusNode: _currentPasswordNode,
+                    decoration: InputDecoration(hintText: 'Current password (necessary)'),
+                    obscureText: true,
+                    controller: _currentPasswordController,
                     validator: (value) {
-                      if (value.trim().isEmpty) {
-                        return 'Enter some text';
+                      if (value.length < 6) {
+                        return 'Password length should be >= 6';
                       }
                       return null;
-                    }
+                    },
+                  ),
+                  Divider(),
+                  TextFormField(
+                      autofocus: true,
+                      focusNode: _nicknameNode,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      controller: _nicknameController,
+                      onFieldSubmitted: (term) {
+                        _nicknameNode.unfocus();
+                        FocusScope.of(context).requestFocus(_emailNode);
+                      },
+                      decoration: InputDecoration(hintText: 'nickname'),
+                      validator: (value) {
+                        if (value.trim().isEmpty) {
+                          return 'Enter some text';
+                        }
+                        return null;
+                      }
                   ),
                   TextFormField(
                     focusNode: _emailNode,
@@ -145,7 +173,7 @@ class SignUpState extends State<SignUp> {
                         _imageNode.unfocus();
                         FocusScope.of(context).requestFocus(_passwordNode);
                       },
-                      decoration: InputDecoration(hintText: 'image url'),
+                      decoration: InputDecoration(hintText: 'Image URL'),
                       validator: (value) {
                         if (value.trim().isEmpty) {
                           return 'Enter some text';
@@ -153,34 +181,21 @@ class SignUpState extends State<SignUp> {
                         return null;
                       }
                   ),
+                  Divider(),
                   TextFormField(
                     focusNode: _passwordNode,
-                    decoration: InputDecoration(hintText: 'password'),
+                    decoration: InputDecoration(hintText: 'New Password'),
                     obscureText: true,
+                    enableInteractiveSelection: false,
                     controller: _passwordController,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (term) {
                       _passwordNode.unfocus();
-                      FocusScope.of(context).requestFocus(_passwordConfirmationNode);
+                      FocusScope.of(context).requestFocus(_currentPasswordNode);
                     },
                     validator: (value) {
                       if (value.length < 6) {
                         return 'Password length should be >= 6';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    focusNode: _passwordConfirmationNode,
-                    decoration: InputDecoration(hintText: 'confirm password'),
-                    obscureText: true,
-                    controller: _passwordConfirmationController,
-                    validator: (value) {
-                      if (value.length < 6) {
-                        return 'Password length should be >= 6';
-                      }
-                      if (value != _passwordController.text) {
-                        return "Not equal";
                       }
                       return null;
                     },
@@ -190,7 +205,7 @@ class SignUpState extends State<SignUp> {
                     child: RaisedButton(
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          confirm(_nicknameController.text, _emailController.text, _nameController.text, _imageController.text, _passwordController.text, _passwordConfirmationController.text);
+                          confirm(_emailController.text, _imageController.text, _nicknameController.text, _nameController.text, _passwordController.text, _currentPasswordController.text);
                         }
                       },
                       child: Text('Submit'),

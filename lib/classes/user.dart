@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'auth.dart';
 
 class User {
   int id;
-  String email;
+  String nickname, email, name, image;
 
-  User(this.id, this.email);
+  User(this.id, this.nickname, this.email, this.name, this.image);
 
   static User current;
   static bool get signedIn => current != null;
@@ -29,7 +30,10 @@ class User {
     var body = jsonDecode(responseBody);
     current = new User(
         body['data']['id'],
-        body['data']['email']
+        body['data']['nickname'],
+        body['data']['email'],
+        body['data']['name'],
+        body['data']['image']
     );
   }
 
@@ -45,10 +49,13 @@ class User {
       }
   }
 
-  static Future<http.Response> signUp(email, pass, passConfirm) async {
+  static Future<http.Response> signUp(nickname, email, name, image, pass, passConfirm) async {
     var url = 'https://milioners.herokuapp.com/api/v1/auth';
     var response = await http.post(url, body: {
+      "nickname": nickname,
       "email": email,
+      "name": name,
+      "image": image,
       "password": pass,
       "password_confirmation": passConfirm
     });
@@ -74,15 +81,33 @@ class User {
     return response;
   }
 
+  static Future<http.Response> edit(email, image, nickname, name, pass, currentPass) async{
+    var url = 'https://milioners.herokuapp.com/api/v1/auth';
+    var response = await http.put(url, headers: headers, body: jsonEncode({
+      "email": email,
+      "password": pass,
+      "current_password": currentPass,
+      "image": image,
+      "nickname": nickname,
+      "name": name
+    }));
+    if (response.statusCode == 200) {
+      _saveCurrentUser(response.body);
+      _saveHeaders(response);
+      saveCredentials(email, pass);
+    }
+    return response;
+  }
+
   static Future<User> findById (int id) async{
     var url = 'http://milioners.herokuapp.com/api/v1/users/$id';
     var response = await http.get(url);
     var body = jsonDecode(response.body);
     if (body['user'] == null) {
-      return User(-1, "");
+      return User(-1, "", "", "", "");
     }
     else {
-      return User(body['user']['id'], body['user']['email']);
+      return User(body['user']['id'], body['user']['nickname'], body['user']['email'], body['user']['name'], body['user']['image']);
     }
   }
 

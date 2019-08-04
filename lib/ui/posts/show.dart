@@ -110,8 +110,8 @@ class PostShow extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Email(post.userId), onPressed: () {
-                            //TODO: show user nickname; redirect to his posts when onPressed
+                          FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Nickname(post.userId), onPressed: () async{
+                            await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
                           }),
                           Text('created:\t\t' + post.created.substring(0,10) + ', ' + post.created.substring(11,16) + _isEdited()),
                         ],
