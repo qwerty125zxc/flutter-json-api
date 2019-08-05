@@ -7,7 +7,7 @@ import 'package:flutter_api/ui/users/show.dart';
 import 'package:flutter_api/ui/users/sign_in.dart';
 import 'package:flutter_api/ui/users/sign_up.dart';
 import 'ui/users/edit.dart';
-import 'classes/user.dart';
+import 'models/user.dart';
 
 void main() => runApp(APIApp());
 

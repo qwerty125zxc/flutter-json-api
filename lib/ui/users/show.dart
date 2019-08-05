@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/classes/post.dart';
-import 'package:flutter_api/classes/user.dart';
+import 'package:flutter_api/models/post.dart';
+import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/ui/pages/homepage.dart';
 import 'package:flutter_api/ui/posts/views.dart';
 import 'package:fluttertoast/fluttertoast.dart';

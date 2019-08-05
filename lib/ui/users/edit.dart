@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/classes/user.dart';
-import 'package:flutter_api/classes/auth.dart';
+import 'package:flutter_api/models/user.dart';
+import 'package:flutter_api/models/auth.dart';
 import 'dart:convert' as convert;
 
 class UserEdit extends StatefulWidget {

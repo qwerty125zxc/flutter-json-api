@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/classes/post.dart';
-import 'package:flutter_api/classes/user.dart';
+import 'package:flutter_api/models/post.dart';
+import 'package:flutter_api/models/user.dart';
 
 class PostsList extends StatelessWidget {
   final List<Post> posts;

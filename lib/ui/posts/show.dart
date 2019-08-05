@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/classes/post.dart';
-import 'package:flutter_api/classes/user.dart';
+import 'package:flutter_api/models/post.dart';
+import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/ui/posts/views.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
