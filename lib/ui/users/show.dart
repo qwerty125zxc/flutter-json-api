@@ -85,15 +85,15 @@ class UserPage extends StatelessWidget {
           ],
         ),
         body:
-        FutureBuilder<List<Post>>(
-          future: HomePage.fetchPosts(http.Client()),
+        /*FutureBuilder<List<Post>>(
+          future: HomePage.fetchPosts(http.Client(), 1),
           builder: (context, snapshot) {
             if (snapshot.hasError) print(snapshot.error);
             return snapshot.hasData
                ? PostsList(posts: snapshot.data.where((post) => post.userId == user.id).toList())
                 : Center(child: CircularProgressIndicator());
-          },
-        )
+          },*/
+          Text("Ще не перероблено"),
     );
   }
 }

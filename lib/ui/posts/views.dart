@@ -12,7 +12,7 @@ class PostsList extends StatelessWidget {
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, index) {
-        return PostView(posts[index]);
+          return PostView(posts[index]);
       },
     );
   }
@@ -46,6 +46,7 @@ class PostView extends StatelessWidget {
                     await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
                   }),
                   Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
+                  LikeView(false, 34),
                 ],
               ),
               Row(
@@ -80,7 +81,7 @@ class PostView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Image.network(snapshot.data.image, headers: User.headers, height: 32.0,),
+              Image.network(snapshot.data.image, headers: User.headers, height: 32.0),
               Container(width: 8.0),
               Text(snapshot.data.nickname),
             ],
@@ -91,5 +92,38 @@ class PostView extends StatelessWidget {
       },
     );
   }
+}
+
+class LikeView extends StatefulWidget {
+  bool liked;
+  int count;
+
+  LikeView(this.liked, this.count);
+
+  @override
+  State<StatefulWidget> createState() => LikeViewState(liked, count);
+}
+class LikeViewState extends State<LikeView> {
+  bool liked = false;
+  int count = 0;
+
+  LikeViewState(this.liked, this.count);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Icon(
+          Icons.thumb_up,
+          color: liked? Colors.blue : Colors.blueGrey
+        ),
+        Text(count.toString()),
+      ],
+    );
+  }
+
 }
 

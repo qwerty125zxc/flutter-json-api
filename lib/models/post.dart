@@ -5,6 +5,7 @@ import 'dart:convert' as convert;
 class Post {
   int id, userId;
   String title, body, created, updated;
+  int get likes => 0;
 
   Post({this.userId: -1, this.id: -1, this.title: "", this.body: "", this.created: "", this.updated: ""});
 
