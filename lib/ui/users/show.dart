@@ -8,10 +8,7 @@ class UserPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    user = ModalRoute
-        .of(context)
-        .settings
-        .arguments; //id
+    user = ModalRoute.of(context).settings.arguments; //id
 
     logout() async {
       var response = await User.logout();
@@ -57,16 +54,16 @@ class UserPage extends StatelessWidget {
         visible: User.signedIn && user.id == User.current.id,
         child: Row(
           children: <Widget>[
-            RaisedButton(
-              textTheme: ButtonTextTheme.accent,
-              child: Text("PROFILE"),
+            IconButton(
+              tooltip: 'Edit profile',
+              icon: Icon(Icons.edit),
               onPressed: () {
                 Navigator.pushNamed(context, 'users/edit', arguments: user);
               },
             ),
-            RaisedButton(
-              textTheme: ButtonTextTheme.accent,
-              child: Text("LOG OUT"),
+            IconButton(
+              tooltip: 'Log out',
+              icon: Icon(Icons.exit_to_app),
               onPressed: () => logoutPrompt(),
             ),
           ],
@@ -76,16 +73,42 @@ class UserPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(user.nickname),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              CircleAvatar(
+                child: ClipOval(child: Image.network(user.image, fit: BoxFit.cover)),
+              ),
+              SizedBox(width: 8),
+              Text(user.nickname),
+            ],
+          ),
           actions: <Widget>[
             buttons()
           ],
         ),
         body:
-          Container(
-            child:
-              PaginatedPosts('http://milioners.herokuapp.com/api/v1/users/${user.id}'),
-          ),
+          PaginatedPosts.startWith(_buildMainLayout(), 'http://milioners.herokuapp.com/api/v1/users/${user.id}', hideAuthor: true)
     );
+  }
+
+  List<Widget> _buildMainLayout() {
+    return [
+      Container(
+        color: Colors.white,
+        child: ListTile(
+          title: Text("About"),
+          subtitle: Text(user.name),
+        ),
+      ),
+      Divider(),
+      Container(
+        color: Colors.white,
+        child: ListTile(
+          title: Text("Posts:"),
+        ),
+      )
+    ];
   }
 }

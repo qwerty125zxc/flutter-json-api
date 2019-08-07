@@ -6,11 +6,14 @@ import 'package:http/http.dart' as http;
 
 class PaginatedPosts extends StatefulWidget {
   final String url;
+  List<Widget> widgets;
+  bool hideAuthor;
 
-  PaginatedPosts(this.url);
+  PaginatedPosts(this.url, {this.hideAuthor});
+  PaginatedPosts.startWith(this.widgets, this.url, {this.hideAuthor});
 
   @override
-  createState() => PaginatedPostsState(url);
+  createState() => PaginatedPostsState(url, startWith: widgets, hideAuthor: hideAuthor);
 }
 class PaginatedPostsState extends State<PaginatedPosts> {
   String url;
@@ -19,8 +22,12 @@ class PaginatedPostsState extends State<PaginatedPosts> {
   var client = http.Client();
   List posts = new List();
   int _pageCounter = 1;
+  bool hideAuthor;
 
-  PaginatedPostsState(this.url);
+  PaginatedPostsState(this.url, {List<Widget> startWith, this.hideAuthor: false}) {
+    if (startWith != null)
+      posts.insertAll(0, startWith);
+  }
 
   @override
   void initState() {
@@ -89,7 +96,7 @@ class PaginatedPostsState extends State<PaginatedPosts> {
         if (index == posts.length) {
           return _buildProgressIndicator();
         } else {
-          return PostView(posts[index]);
+          return posts[index] is Post? PostView(posts[index], hideAuthor: hideAuthor) : posts[index];
         }
       },
       controller: _scrollController,
@@ -99,8 +106,11 @@ class PaginatedPostsState extends State<PaginatedPosts> {
 
 class PostView extends StatelessWidget {
   final Post post;
+  bool hideAuthor;
 
-  PostView(this.post, {Key key}) : super(key: key);
+  PostView(this.post, {this.hideAuthor = false}) {
+    if (hideAuthor == null) hideAuthor = false;
+  }
 
   _isEdited() => post.created == post.updated ? "" : " (edited)";
 
@@ -121,9 +131,12 @@ class PostView extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  FlatButton(textTheme: ButtonTextTheme.accent, child: Nickname(post.userId), onPressed: () async{
-                    await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
-                  }),
+                  Visibility(
+                    visible: !hideAuthor,
+                    child: FlatButton(textTheme: ButtonTextTheme.accent, child: Nickname(post.userId), onPressed: () async{
+                      await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
+                    }),
+                  ),
                   Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
                   LikeView(false, 34),
                 ],
@@ -160,7 +173,10 @@ class PostView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Image.network(snapshot.data.image, headers: User.headers, height: 32.0),
+              CircleAvatar(
+                radius: 16.0,
+                child: ClipOval(child: Image.network(snapshot.data.image, headers: User.headers)),
+              ),
               Container(width: 8.0),
               Text(snapshot.data.nickname),
             ],
@@ -197,7 +213,7 @@ class LikeViewState extends State<LikeView> {
       children: <Widget>[
         Icon(
           Icons.thumb_up,
-          color: liked? Colors.blue : Colors.blueGrey
+          color: liked? Colors.blue : Colors.grey
         ),
         Text(count.toString()),
       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -6,6 +7,7 @@ class Post {
   int id, userId;
   String title, body, created, updated;
   int get likes => 0;
+  Future<User> get user async => await User.findById(userId); //does it work fine?
 
   Post({this.userId: -1, this.id: -1, this.title: "", this.body: "", this.created: "", this.updated: ""});
 
