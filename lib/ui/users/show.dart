@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
-import 'package:flutter_api/ui/pages/homepage.dart';
 import 'package:flutter_api/ui/posts/views.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
 
 class UserPage extends StatelessWidget {
   User user;
@@ -85,15 +82,10 @@ class UserPage extends StatelessWidget {
           ],
         ),
         body:
-        /*FutureBuilder<List<Post>>(
-          future: HomePage.fetchPosts(http.Client(), 1),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) print(snapshot.error);
-            return snapshot.hasData
-               ? PostsList(posts: snapshot.data.where((post) => post.userId == user.id).toList())
-                : Center(child: CircularProgressIndicator());
-          },*/
-          Text("Ще не перероблено"),
+          Container(
+            child:
+              PaginatedPosts('http://milioners.herokuapp.com/api/v1/users/${user.id}'),
+          ),
     );
   }
 }

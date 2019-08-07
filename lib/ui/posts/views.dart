@@ -1,19 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
+import 'dart:convert' as convert;
+import 'package:http/http.dart' as http;
 
-class PostsList extends StatelessWidget {
-  final List<Post> posts;
+class PaginatedPosts extends StatefulWidget {
+  final String url;
 
-  PostsList({Key key, this.posts}) : super(key: key);
+  PaginatedPosts(this.url);
 
   @override
-  Widget build(BuildContext context) {
+  createState() => PaginatedPostsState(url);
+}
+class PaginatedPostsState extends State<PaginatedPosts> {
+  String url;
+  ScrollController _scrollController = new ScrollController();
+  bool isLoading = false;
+  var client = http.Client();
+  List posts = new List();
+  int _pageCounter = 1;
+
+  PaginatedPostsState(this.url);
+
+  @override
+  void initState() {
+    _getMoreData();
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _getMoreData();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _buildList();
+
+  static List<Post> parsePosts(String responseBody) {
+    final Map<String, dynamic> jsonResponse = convert.jsonDecode(responseBody);
+    return jsonResponse["posts"].map<Post>((json) => Post.fromJson(json)).toList();
+  }
+
+  static Future<List<Post>> fetchPosts(http.Client client, String url, int page) async {
+    var request = '$url?page=$page';
+    final response = await client.get(request);
+    return parsePosts(response.body);
+  }
+
+  void _getMoreData() async {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+
+      var psts = await fetchPosts(client, url, _pageCounter++);
+
+      setState(() {
+        isLoading = false;
+        posts.addAll(psts);
+      });
+    }
+  }
+
+  Widget _buildProgressIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoading ? 1.0 : 00,
+          child: new CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList() {
     return ListView.builder(
-      itemCount: posts.length,
-      itemBuilder: (context, index) {
+      //+1 for progressbar
+      itemCount: posts.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == posts.length) {
+          return _buildProgressIndicator();
+        } else {
           return PostView(posts[index]);
+        }
       },
+      controller: _scrollController,
     );
   }
 }
