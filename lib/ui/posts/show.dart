@@ -3,6 +3,7 @@ import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/ui/posts/views.dart';
 import 'package:flutter_api/utils/route_arguments.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -22,24 +23,10 @@ class PostShow extends StatelessWidget {
       var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
       try {
         var response = await http.delete(url, headers: User.headers);
-        if (response.statusCode == 200)
-          showDialog(context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Success'),
-                content: Text('Post was successfully deleted.'),
-                actions: <Widget>[
-                  FlatButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
-                    },
-                  )
-                ],
-              );
-            },
-            barrierDismissible: false,
-          );
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(msg: 'Post was successfully deleted.');
+          Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+        }
         else
           showDialog(context: context,
               builder: (context) {

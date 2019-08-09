@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -35,24 +36,10 @@ class PostEditFormState extends State<PostEditForm> {
         var response = await http.put(url, headers: User.headers,
             body: convert.jsonEncode({'title': _titleController.text, 'body': _bodyController.text})
         );
-        if (response.statusCode == 200)
-          showDialog(context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Success!'),
-                content: Text('Post was successfully edited.'),
-                actions: <Widget>[
-                  FlatButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
-                    },
-                  )
-                ],
-              );
-            },
-            barrierDismissible: false,
-          );
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(msg: 'Post was successfully edited.');
+          Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+        }
         else
           showDialog(context: context,
               builder: (context) {

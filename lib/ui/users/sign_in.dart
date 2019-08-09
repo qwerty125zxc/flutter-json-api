@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_api/models/user.dart';
 import 'dart:convert' as convert;
 
+import 'package:fluttertoast/fluttertoast.dart';
+
 class SignIn extends StatefulWidget {
   @override
   createState() => SignInState();
@@ -20,21 +22,8 @@ class SignInState extends State<SignIn> {
     var response = await User.signIn(email, pass);
     var body = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Success"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("OK"),
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false),
-              )
-            ],
-          );
-        },
-      );
+      Fluttertoast.showToast(msg: 'Success');
+      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
     }
     else {
       debugPrint(response.body);

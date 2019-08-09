@@ -3,6 +3,8 @@ import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/models/auth.dart';
 import 'dart:convert' as convert;
 
+import 'package:fluttertoast/fluttertoast.dart';
+
 class UserEdit extends StatefulWidget {
   @override
   createState() => UserEditState();
@@ -31,21 +33,8 @@ class UserEditState extends State<UserEdit> {
     var response = await User.edit(email, image, nickname, name, pass, currPass);
     var body = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Success"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("OK"),
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false),
-              )
-            ],
-          );
-        },
-      );
+      Fluttertoast.showToast(msg: 'Success');
+      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
     }
     else {
       var messages = body["errors"]["full_messages"].toString();

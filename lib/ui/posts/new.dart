@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/user.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -33,29 +34,21 @@ class PostCreateFormState extends State<PostCreateForm> {
                 "body": _bodyController.text
               }
             }));
-        if (response.statusCode == 201)
-          showDialog(context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Success!'),
-                content: Text('Post was successfully uploaded.'),
-                actions: <Widget>[
-                  FlatButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
-                    },
-                  )
-                ],
-              );
-            },
-            barrierDismissible: false,
-          );
+        if (response.statusCode == 201) {
+          Fluttertoast.showToast(msg: 'Post was successfully uploaded.');
+          Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+        }
         else
           showDialog(context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: Text("you failed me"),
+                  content: Text("Something went wrong"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("OK"),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  ],
                 );
               },
           );
