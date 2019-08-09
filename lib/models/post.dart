@@ -4,13 +4,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class Post {
-  int id, userId, likesCount;
+  int id, userId, likesCount, commentsCount;
   String title, body, created, updated;
   dynamic likes;
 
   Future<User> get user async => await User.findById(userId); //does it work fine?
 
-  Post({this.userId: -1, this.id: -1, this.title: "", this.body: "", this.created: "", this.updated: "", this.likesCount, this.likes});
+  Post({this.userId: -1, this.id: -1, this.title: "", this.body: "", this.created: "", this.updated: "", this.likesCount, this.likes, this.commentsCount});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     // used in index & show, some fields(through index) are not accessible
@@ -21,6 +21,7 @@ class Post {
       body: json['body'] as String,
       likes: json['likes'],
       likesCount: json['likes_count'] as int,
+      commentsCount: json['comments_count'] as int,
       created: json['created_at'] as String,
       updated: json['updated_at'] as String,
     );
@@ -40,8 +41,7 @@ class Post {
     return false;
   }
 
-  static Future<Post> findById(int id, created, updated) async
-  {
+  static Future<Post> findById(int id, created, updated) async {
     var response = await http.get('https://milioners.herokuapp.com/api/v1/posts/$id');
     debugPrint(response.body);
     var post = Post.fromJson(convert.jsonDecode(response.body)['post']);

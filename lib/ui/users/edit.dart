@@ -29,6 +29,8 @@ class UserEditState extends State<UserEdit> {
   final _passwordNode = FocusNode();
   final _currentPasswordNode = FocusNode();
 
+  final _deleteController = TextEditingController();
+
   confirm(email, image, nickname, name, pass, currPass) async {
     var response = await User.edit(email, image, nickname, name, pass, currPass);
     var body = convert.jsonDecode(response.body);
@@ -60,6 +62,85 @@ class UserEditState extends State<UserEdit> {
     _passwordController.text = creds['password'];
   }
 
+  deletePrompt() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        _deleteController.text = "";
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text("Please, enter your password again"),
+              TextField(
+                controller: _deleteController,
+                obscureText: true,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Next'),
+              onPressed: () {
+                if (_deleteController.text == _passwordController.text) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Are you sure?'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text("CONFIRM"),
+                            onPressed: () async {
+                              var response = await User.delete();
+                              var body = convert.jsonDecode(response.body);
+                              if (response.statusCode == 200) {
+                                Fluttertoast.showToast(msg: 'Account was deleted successfully.');
+                                Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+                              }
+                              else {
+                                var messages = body["errors"]["full_messages"].toString();
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text("Error"),
+                                      content: Text(messages.substring(1, messages.length-1)),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text("OK"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            }
+                          ),
+                          FlatButton(
+                            child: Text("DISCARD"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      );
+                    }
+                  );
+                }
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     user = ModalRoute.of(context).settings.arguments;
@@ -72,7 +153,15 @@ class UserEditState extends State<UserEdit> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: Text('Edit Profile'),
+        actions: <Widget>[
+          RaisedButton(
+            child: Text('Delete account'),
+            onPressed: () {
+              deletePrompt();
+            },
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Center(

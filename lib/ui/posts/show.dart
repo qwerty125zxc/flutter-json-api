@@ -125,7 +125,17 @@ class PostShow extends StatelessWidget {
                               LikeView(post),
                               Text('[кнопка поширити]', style: TextStyle(fontStyle: FontStyle.italic),),
                             ],
-                          )
+                          ),
+                          Divider(),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Container(
+                                color: Colors.white,
+                                child: Text("Comments: ${post.commentsCount}"),
+                              ),
+                            ],
+                          ),
                         ],
                       )
                     ],

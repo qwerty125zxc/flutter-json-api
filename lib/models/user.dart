@@ -123,4 +123,10 @@ class User {
     current = null;
     return await http.delete(url, headers: logoutHeaders);
   }
+  static Future<http.Response> delete() async {
+    var url = 'https://milioners.herokuapp.com/api/v1/auth';
+    saveCredentials("", "");
+    current = null;
+    return await http.delete(url, headers: User.headers);
+  }
 }
