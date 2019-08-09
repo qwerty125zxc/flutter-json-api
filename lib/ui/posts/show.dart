@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/ui/posts/views.dart';
+import 'package:flutter_api/utils/route_arguments.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -13,7 +14,9 @@ class PostShow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    post = ModalRoute.of(context).settings.arguments;
+    RouteArgs args = ModalRoute.of(context).settings.arguments;
+    int id = args.id;
+    String created = args.created, updated = args.updated;
 
     delete() async {
       var url = 'https://milioners.herokuapp.com/api/v1/posts/${post.id}';
@@ -77,60 +80,77 @@ class PostShow extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(post.title),
+        title: Text(args.title),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Visibility(
-                visible: User.signedIn && post.userId == User.current.id,
-                child: Row(
-                  children: <Widget>[
-                    RaisedButton(
-                      textTheme: ButtonTextTheme.accent,
-                      child: Text("EDIT"),
-                      onPressed: () => Navigator.pushNamed(context, 'posts/edit', arguments: post)
-                    ),
-                    RaisedButton(
-                      textTheme: ButtonTextTheme.accent,
-                      child: Text("DELETE"),
-                      onPressed: () => deletePrompt(),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
+      body: FutureBuilder<Post>(
+        future: Post.findById(id, created, updated),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            post = snapshot.data;
+            return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
                 children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Visibility(
+                    visible: User.signedIn && post.userId == User.current.id,
+                    child: Row(
+                      children: <Widget>[
+                        RaisedButton(
+                          textTheme: ButtonTextTheme.accent,
+                          child: Text("EDIT"),
+                          onPressed: () => Navigator.pushNamed(context, 'posts/edit', arguments: post)
+                        ),
+                        RaisedButton(
+                          textTheme: ButtonTextTheme.accent,
+                          child: Text("DELETE"),
+                          onPressed: () => deletePrompt(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
                     children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Nickname(post.userId), onPressed: () async{
-                            await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
-                          }),
-                          Text('created:\t\t' + post.created.substring(0,10) + ', ' + post.created.substring(11,16) + _isEdited()),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            post.body,
-                            style: TextStyle(fontSize: 14),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Nickname(post.userId), onPressed: () async{
+                                await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
+                              }),
+                              Text('created:\t\t' + post.created.substring(0,10) + ', ' + post.created.substring(11,16) + _isEdited()),
+                            ],
                           ),
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                post.body,
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Text('Actions:', style: TextStyle(fontStyle: FontStyle.italic),),
+                              LikeView(post),
+                              Text('[кнопка поширити]', style: TextStyle(fontStyle: FontStyle.italic),),
+                            ],
+                          )
                         ],
-                      ),
+                      )
                     ],
-                  )
+                  ),
                 ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        }
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
+import 'package:flutter_api/utils/route_arguments.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 
@@ -120,7 +122,7 @@ class PostView extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue,
         onTap: () {
-          Navigator.pushNamed(context, 'posts/show', arguments: post);
+          Navigator.pushNamed(context, 'posts/show', arguments: RouteArgs(post.id, post.title, post.created, post.updated));
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -138,7 +140,6 @@ class PostView extends StatelessWidget {
                     }),
                   ),
                   Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
-                  LikeView(false, 34),
                 ],
               ),
               Row(
@@ -190,33 +191,65 @@ class PostView extends StatelessWidget {
 }
 
 class LikeView extends StatefulWidget {
-  bool liked;
-  int count;
+  final Post post;
 
-  LikeView(this.liked, this.count);
+  LikeView(this.post);
 
   @override
-  State<StatefulWidget> createState() => LikeViewState(liked, count);
+  State<StatefulWidget> createState() => LikeViewState(post);
 }
 class LikeViewState extends State<LikeView> {
+  Post post;
   bool liked = false;
   int count = 0;
 
-  LikeViewState(this.liked, this.count);
+  bool loaded;
+
+  LikeViewState(this.post);
+
+  @override
+  void initState() {
+    liked = post.liked;
+    count = post.likesCount;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Icon(
-          Icons.thumb_up,
-          color: liked? Colors.blue : Colors.grey
+    return FlatButton(
+      shape: CircleBorder(),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.thumb_up,
+              color: liked? Colors.blue : Colors.grey
+            ),
+            Text(count.toString()),
+          ],
         ),
-        Text(count.toString()),
-      ],
+      ),
+      onPressed: () {
+        if (User.signedIn) {
+          post.like();
+          setState(() {
+            if (liked) {
+              count--;
+            }
+            else {
+              count++;
+            }
+            liked = !liked;
+          });
+        }
+        else {
+          Fluttertoast.showToast(msg: "You need to log in to do this");
+        }
+      },
     );
   }
 
