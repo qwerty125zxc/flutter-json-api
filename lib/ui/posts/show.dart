@@ -127,15 +127,8 @@ class PostShow extends StatelessWidget {
                             ],
                           ),
                           Divider(),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Container(
-                                color: Colors.white,
-                                child: Text("Comments: ${post.commentsCount}"),
-                              ),
-                            ],
-                          ),
+                          Text("Comments: ${post.commentsCount}"),
+                          CommentUploadView(post.id, "Post"),
                         ],
                       )
                     ],

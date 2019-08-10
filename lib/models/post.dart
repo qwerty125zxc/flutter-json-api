@@ -43,7 +43,6 @@ class Post {
 
   static Future<Post> findById(int id, created, updated) async {
     var response = await http.get('https://milioners.herokuapp.com/api/v1/posts/$id');
-    debugPrint(response.body);
     var post = Post.fromJson(convert.jsonDecode(response.body)['post']);
     post.created = created;
     post.updated = updated;

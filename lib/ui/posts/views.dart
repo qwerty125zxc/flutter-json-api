@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/models/comment.dart';
 import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/utils/route_arguments.dart';
@@ -15,8 +16,10 @@ class PaginatedPosts extends StatefulWidget {
   PaginatedPosts.startWith(this.widgets, this.url, {this.hideAuthor});
 
   @override
-  createState() => PaginatedPostsState(url, startWith: widgets, hideAuthor: hideAuthor);
+  createState() =>
+      PaginatedPostsState(url, startWith: widgets, hideAuthor: hideAuthor);
 }
+
 class PaginatedPostsState extends State<PaginatedPosts> {
   String url;
   ScrollController _scrollController = new ScrollController();
@@ -26,9 +29,9 @@ class PaginatedPostsState extends State<PaginatedPosts> {
   int _pageCounter = 1;
   bool hideAuthor;
 
-  PaginatedPostsState(this.url, {List<Widget> startWith, this.hideAuthor: false}) {
-    if (startWith != null)
-      posts.insertAll(0, startWith);
+  PaginatedPostsState(this.url,
+      {List<Widget> startWith, this.hideAuthor: false}) {
+    if (startWith != null) posts.insertAll(0, startWith);
   }
 
   @override
@@ -54,10 +57,13 @@ class PaginatedPostsState extends State<PaginatedPosts> {
 
   static List<Post> parsePosts(String responseBody) {
     final Map<String, dynamic> jsonResponse = convert.jsonDecode(responseBody);
-    return jsonResponse["posts"].map<Post>((json) => Post.fromJson(json)).toList();
+    return jsonResponse["posts"]
+        .map<Post>((json) => Post.fromJson(json))
+        .toList();
   }
 
-  static Future<List<Post>> fetchPosts(http.Client client, String url, int page) async {
+  static Future<List<Post>> fetchPosts(
+      http.Client client, String url, int page) async {
     var request = '$url?page=$page';
     final response = await client.get(request);
     return parsePosts(response.body);
@@ -98,7 +104,9 @@ class PaginatedPostsState extends State<PaginatedPosts> {
         if (index == posts.length) {
           return _buildProgressIndicator();
         } else {
-          return posts[index] is Post? PostView(posts[index], hideAuthor: hideAuthor) : posts[index];
+          return posts[index] is Post
+              ? PostView(posts[index], hideAuthor: hideAuthor)
+              : posts[index];
         }
       },
       controller: _scrollController,
@@ -122,7 +130,9 @@ class PostView extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue,
         onTap: () {
-          Navigator.pushNamed(context, 'posts/show', arguments: RouteArgs(post.id, post.title, post.created, post.updated));
+          Navigator.pushNamed(context, 'posts/show',
+              arguments:
+                  RouteArgs(post.id, post.title, post.created, post.updated));
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -135,17 +145,25 @@ class PostView extends StatelessWidget {
                 children: <Widget>[
                   Visibility(
                     visible: !hideAuthor,
-                    child: FlatButton(textTheme: ButtonTextTheme.accent, child: Nickname(post.userId), onPressed: () async{
-                      await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
-                    }),
+                    child: FlatButton(
+                        textTheme: ButtonTextTheme.accent,
+                        child: Nickname(post.userId),
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, 'users/show',
+                              arguments: await User.findById(post.userId));
+                        }),
                   ),
-                  Text(post.created.substring(0,10) + '\n' + post.created.substring(11,16) + _isEdited()),
+                  Text(post.created.substring(0, 10) +
+                      '\n' +
+                      post.created.substring(11, 16) +
+                      _isEdited()),
                 ],
               ),
               Row(
                 children: <Widget>[
                   Text(post.title,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),
               Row(
@@ -164,7 +182,7 @@ class PostView extends StatelessWidget {
     );
   }
 
-  static Widget Nickname (int id) {
+  static Widget Nickname(int id) {
     return FutureBuilder<User>(
       future: User.findById(id),
       builder: (context, snapshot) {
@@ -176,7 +194,9 @@ class PostView extends StatelessWidget {
             children: <Widget>[
               CircleAvatar(
                 radius: 16.0,
-                child: ClipOval(child: Image.network(snapshot.data.image, headers: User.headers)),
+                child: ClipOval(
+                    child: Image.network(snapshot.data.image,
+                        headers: User.headers)),
               ),
               Container(width: 8.0),
               Text(snapshot.data.nickname),
@@ -198,6 +218,7 @@ class LikeView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => LikeViewState(post);
 }
+
 class LikeViewState extends State<LikeView> {
   Post post;
   bool liked = false;
@@ -225,10 +246,7 @@ class LikeViewState extends State<LikeView> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.thumb_up,
-              color: liked? Colors.blue : Colors.grey
-            ),
+            Icon(Icons.thumb_up, color: liked ? Colors.blue : Colors.grey),
             Text(count.toString()),
           ],
         ),
@@ -239,19 +257,88 @@ class LikeViewState extends State<LikeView> {
           setState(() {
             if (liked) {
               count--;
-            }
-            else {
+            } else {
               count++;
             }
             liked = !liked;
           });
-        }
-        else {
+        } else {
           Fluttertoast.showToast(msg: "You need to log in to do this");
         }
       },
     );
   }
-
 }
 
+class CommentUploadView extends StatefulWidget {
+
+  final int objectId; final String objectType;
+  CommentUploadView(this.objectId, this.objectType);
+
+  @override
+  createState() => CommentUploadViewState(objectId, objectType);
+}
+
+class CommentUploadViewState extends State<CommentUploadView> {
+  bool edit;
+  var _controller = TextEditingController();
+
+  int objectId; String objectType;
+  CommentUploadViewState(this.objectId, this.objectType);
+
+  @override
+  void initState() {
+    edit = false;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return edit
+        ? Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                width: 250,
+                child: TextField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: _controller,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  decoration: InputDecoration(hintText: 'Write comment...'),
+                  maxLines: null,
+                  autofocus: true
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.send, color: Theme.of(context).primaryColor,),
+                onPressed: () async{
+                  Fluttertoast.showToast(msg: "Sending...");
+                  var response = await Comment.create(objectId, objectType, _controller.text);
+                  debugPrint('COMMENT -- ${response.body}');
+                  debugPrint('COMMENT -- ${response.statusCode}');
+                  if (response.statusCode == 201) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Comment uploaded successfully.")));
+                    setState(() {
+                      edit = false;
+                    });
+                  }
+                },
+              )
+            ],
+          )
+        : RaisedButton(
+            child: Text("Write comment"),
+            onPressed: () {
+              if (User.signedIn) {
+                setState(() {
+                  edit = true;
+                });
+              }
+              else Fluttertoast.showToast(msg: "You need to log in to do this");
+            },
+          );
+  }
+}
