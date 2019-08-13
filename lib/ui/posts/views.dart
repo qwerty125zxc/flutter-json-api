@@ -182,7 +182,7 @@ class PostView extends StatelessWidget {
     );
   }
 
-  static Widget Nickname(int id) {
+  static Widget Nickname(int id, [double radius=16.0]) {
     return FutureBuilder<User>(
       future: User.findById(id),
       builder: (context, snapshot) {
@@ -193,7 +193,7 @@ class PostView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               CircleAvatar(
-                radius: 16.0,
+                radius: radius,
                 child: ClipOval(
                     child: Image.network(snapshot.data.image,
                         headers: User.headers)),
@@ -341,4 +341,46 @@ class CommentUploadViewState extends State<CommentUploadView> {
             },
           );
   }
+}
+
+class UserCommentView extends StatefulWidget {
+  final Comment comment;
+  UserCommentView(this.comment);
+
+  @override
+  createState() => UserCommentViewState(comment);
+}
+class UserCommentViewState extends State<UserCommentView> {
+  Comment comment;
+  UserCommentViewState(this.comment);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: <Widget>[
+            FlatButton(textTheme: ButtonTextTheme.accent, child: PostView.Nickname(comment.userId), onPressed: () async{
+              await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(comment.userId));
+            }),
+            Expanded(
+              child: Text(comment.text), //maxLines: null
+            ),
+            IconButton(
+              icon: Icon(Icons.more_vert),
+              onPressed: () {
+                //TODO: show popup menu
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
 }

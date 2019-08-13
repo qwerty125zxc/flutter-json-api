@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/models/comment.dart';
 import 'package:flutter_api/models/post.dart';
 import 'package:flutter_api/models/user.dart';
 import 'package:flutter_api/ui/posts/views.dart';
@@ -70,8 +71,9 @@ class PostShow extends StatelessWidget {
         title: Text(args.title),
       ),
       body: FutureBuilder<Post>(
-        future: Post.findById(id, created, updated),
+        future: Post.findByIdShow(id, created, updated),
         builder: (context, snapshot) {
+          if (snapshot.hasError) debugPrint(snapshot.error.toString());
           if (snapshot.hasData) {
             post = snapshot.data;
             return SingleChildScrollView(
@@ -96,41 +98,42 @@ class PostShow extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Row(
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Nickname(post.userId), onPressed: () async{
-                                await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
-                              }),
-                              Text('created:\t\t' + post.created.substring(0,10) + ', ' + post.created.substring(11,16) + _isEdited()),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                post.body,
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Text('Actions:', style: TextStyle(fontStyle: FontStyle.italic),),
-                              LikeView(post),
-                              Text('[кнопка поширити]', style: TextStyle(fontStyle: FontStyle.italic),),
-                            ],
-                          ),
-                          Divider(),
-                          Text("Comments: ${post.commentsCount}"),
-                          CommentUploadView(post.id, "Post"),
+                          FlatButton(textTheme: ButtonTextTheme.primary, child: PostView.Nickname(post.userId, 32), onPressed: () async{
+                            await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(post.userId));
+                          }),
+                          Text('created:\t\t' + post.created.substring(0,10) + ', ' + post.created.substring(11,16) + _isEdited()),
                         ],
-                      )
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              post.body,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text('Actions:', style: TextStyle(fontStyle: FontStyle.italic),),
+                          LikeView(post),
+                          Text('[кнопка поширити]', style: TextStyle(fontStyle: FontStyle.italic),),
+                        ],
+                      ),
+                      Divider(),
+                      Text("Comments: ${post.commentsCount}"),
+                      CommentUploadView(post.id, "Post"),
+                      UserCommentView(post.comments[0]),
                     ],
                   ),
                 ],
