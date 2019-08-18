@@ -299,8 +299,7 @@ class CommentUploadViewState extends State<CommentUploadView> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Container(
-                width: 250,
+              Expanded(
                 child: TextField(
                   textCapitalization: TextCapitalization.sentences,
                   controller: _controller,
@@ -314,16 +313,19 @@ class CommentUploadViewState extends State<CommentUploadView> {
               IconButton(
                 icon: Icon(Icons.send, color: Theme.of(context).primaryColor,),
                 onPressed: () async{
-                  Fluttertoast.showToast(msg: "Sending...");
-                  var response = await Comment.create(objectId, objectType, _controller.text);
-                  debugPrint('COMMENT -- ${response.body}');
-                  debugPrint('COMMENT -- ${response.statusCode}');
-                  if (response.statusCode == 201) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Comment uploaded successfully.")));
-                    setState(() {
-                      edit = false;
-                    });
+                  if (_controller.text.isNotEmpty) {
+                    Fluttertoast.showToast(msg: "Sending...");
+                    var response = await Comment.create(
+                        objectId, objectType, _controller.text);
+                    debugPrint('COMMENT -- ${response.body}');
+                    debugPrint('COMMENT -- ${response.statusCode}');
+                    if (response.statusCode == 201) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Comment uploaded successfully.")));
+                      setState(() {
+                        edit = false;
+                      });
+                    }
                   }
                 },
               )
@@ -365,11 +367,11 @@ class UserCommentViewState extends State<UserCommentView> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: <Widget>[
-            FlatButton(textTheme: ButtonTextTheme.accent, child: PostView.Nickname(comment.userId), onPressed: () async{
+            FlatButton(child: PostView.Nickname(comment.userId), onPressed: () async{
               await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(comment.userId));
             }),
             Expanded(
-              child: Text(comment.text), //maxLines: null
+              child: Text(comment.text),
             ),
             IconButton(
               icon: Icon(Icons.more_vert),
@@ -382,5 +384,4 @@ class UserCommentViewState extends State<UserCommentView> {
       ),
     );
   }
-
 }

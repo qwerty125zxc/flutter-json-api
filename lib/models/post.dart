@@ -72,8 +72,8 @@ class Post {
     post.updated = updated;
     return post;
   }
-  static Future<Post> findByIdShow(int id, created, updated) async {
-    var response = await http.get('https://milioners.herokuapp.com/api/v1/posts/$id');
+  static Future<Post> findByIdShow(int id, created, updated, int page) async {
+    var response = await http.get('https://milioners.herokuapp.com/api/v1/posts/$id?page=$page');
     var post = Post.fromJsonShow(convert.jsonDecode(response.body)['post']);
     post.created = created;
     post.updated = updated;
