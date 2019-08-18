@@ -24,7 +24,6 @@ class Post {
       body: json['body'] as String,
       likes: json['likes'],
       likesCount: json['likes_count'] as int,
-      //comments: convert.jsonDecode(json['comments']).toList(),
       commentsCount: json['comments_count'] as int,
       created: json['created_at'] as String,
       updated: json['updated_at'] as String,

@@ -389,8 +389,9 @@ class UserCommentViewState extends State<UserCommentView> {
           builder: (context, snapshot) {
             if (snapshot.hasError) debugPrint(snapshot.error.toString());
             if (snapshot.hasData) {
-              return Text('you are pidor');
-              //TODO: show comment comments
+              return Column(
+                children: snapshot.data.comments.map((i) => UserCommentView(i)).toList(),
+              );
             }
             else return CircularProgressIndicator();
           }
