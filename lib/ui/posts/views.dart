@@ -182,7 +182,7 @@ class PostView extends StatelessWidget {
     );
   }
 
-  static Widget Nickname(int id, [double radius=16.0]) {
+  static Widget Nickname(int id, [double radius = 16.0]) {
     return FutureBuilder<User>(
       future: User.findById(id),
       builder: (context, snapshot) {
@@ -271,9 +271,10 @@ class LikeViewState extends State<LikeView> {
 }
 
 class CommentUploadView extends StatefulWidget {
-
-  final int objectId; final String objectType;
-  CommentUploadView(this.objectId, this.objectType);
+  final int objectId;
+  final String objectType;
+  final String label;
+  CommentUploadView(this.label, this.objectId, this.objectType);
 
   @override
   createState() => CommentUploadViewState(objectId, objectType);
@@ -283,7 +284,8 @@ class CommentUploadViewState extends State<CommentUploadView> {
   bool edit;
   var _controller = TextEditingController();
 
-  int objectId; String objectType;
+  int objectId;
+  String objectType;
   CommentUploadViewState(this.objectId, this.objectType);
 
   @override
@@ -301,18 +303,20 @@ class CommentUploadViewState extends State<CommentUploadView> {
             children: <Widget>[
               Expanded(
                 child: TextField(
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: _controller,
-                  keyboardType: TextInputType.multiline,
-                  textInputAction: TextInputAction.newline,
-                  decoration: InputDecoration(hintText: 'Write comment...'),
-                  maxLines: null,
-                  autofocus: true
-                ),
+                    textCapitalization: TextCapitalization.sentences,
+                    controller: _controller,
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.newline,
+                    decoration: InputDecoration(hintText: '${widget.label}...'),
+                    maxLines: null,
+                    autofocus: true),
               ),
               IconButton(
-                icon: Icon(Icons.send, color: Theme.of(context).primaryColor,),
-                onPressed: () async{
+                icon: Icon(
+                  Icons.send,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: () async {
                   if (_controller.text.isNotEmpty) {
                     Fluttertoast.showToast(msg: "Sending...");
                     var response = await Comment.create(
@@ -332,14 +336,14 @@ class CommentUploadViewState extends State<CommentUploadView> {
             ],
           )
         : RaisedButton(
-            child: Text("Write comment"),
+            child: Text(widget.label),
             onPressed: () {
               if (User.signedIn) {
                 setState(() {
                   edit = true;
                 });
-              }
-              else Fluttertoast.showToast(msg: "You need to log in to do this");
+              } else
+                Fluttertoast.showToast(msg: "You need to log in to do this");
             },
           );
   }
@@ -352,36 +356,46 @@ class UserCommentView extends StatefulWidget {
   @override
   createState() => UserCommentViewState(comment);
 }
+
 class UserCommentViewState extends State<UserCommentView> {
   Comment comment;
   UserCommentViewState(this.comment);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: <Widget>[
-            FlatButton(child: PostView.Nickname(comment.userId), onPressed: () async{
-              await Navigator.pushNamed(context, 'users/show', arguments: await User.findById(comment.userId));
-            }),
-            Expanded(
-              child: Text(comment.text),
-            ),
-            IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {
-                //TODO: show popup menu
-              },
-            )
-          ],
-        ),
+    return ExpansionTile(
+      leading: FlatButton(
+        child: PostView.Nickname(comment.userId),
+        onPressed: () async {
+          await Navigator.pushNamed(context, 'users/show',
+            arguments: await User.findById(comment.userId));
+        }
       ),
+      title: Row(
+        children: <Widget>[
+          Expanded(child: Text(comment.text)),
+          IconButton(
+            icon: Icon(Icons.favorite_border), //TODO: check if liked
+            onPressed: () {
+              //TODO: show popup menu
+            },
+          )
+        ],
+      ),
+      children: [
+        CommentUploadView("Reply", comment.id, "Comment"),
+        FutureBuilder<Comment>(
+          future: Comment.findById(comment.id),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) debugPrint(snapshot.error.toString());
+            if (snapshot.hasData) {
+              return Text('you are pidor');
+              //TODO: show comment comments
+            }
+            else return CircularProgressIndicator();
+          }
+        )
+      ],
     );
   }
 }

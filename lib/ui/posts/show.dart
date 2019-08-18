@@ -8,8 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-import 'edit.dart';
-
 class PostShow extends StatefulWidget {
 
   @override
@@ -136,7 +134,7 @@ class _PostShowState extends State<PostShow> {
                 ),
                 Divider(),
                 Text("Comments: ${post.commentsCount}"),
-                CommentUploadView(post.id, "Post"),
+                CommentUploadView("Write comment", post.id, "Post"),
               ]);
             } else {
               return Center(child: CircularProgressIndicator());

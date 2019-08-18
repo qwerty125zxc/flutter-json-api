@@ -29,4 +29,8 @@ class Comment {
     });
     return http.post(url, headers: User.headers, body: body);
   }
+
+  static Future<Comment> findById(int id) {
+    //TODO: finish
+  }
 }
