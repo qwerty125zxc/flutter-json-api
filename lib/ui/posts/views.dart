@@ -360,42 +360,99 @@ class UserCommentView extends StatefulWidget {
 class UserCommentViewState extends State<UserCommentView> {
   Comment comment;
   UserCommentViewState(this.comment);
+  bool isExpanded = false;
+
+  Widget avatar(int userId) {
+    return FutureBuilder<User>(
+      future: User.findById(userId),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              CircleAvatar(
+                radius: 16.0,
+                child: ClipOval(
+                    child: Image.network(snapshot.data.image,
+                        headers: User.headers)),
+              ),
+            ],
+          );
+        } else {
+          return Container(width: 0.0, height: 0.0);
+        }
+      },
+    );
+  }
+
+  Widget nickname(int userId) {
+    return FutureBuilder<User>(
+      future: User.findById(userId),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(snapshot.data.nickname, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold));
+        } else {
+          return Container(width: 0.0, height: 0.0);
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      leading: FlatButton(
-        child: PostView.Nickname(comment.userId),
-        onPressed: () async {
+      onExpansionChanged: (expanded) {
+        setState(() {
+          isExpanded = expanded;
+        });
+      },
+      leading: GestureDetector(
+        child: avatar(comment.userId),
+        onTap: () async {
           await Navigator.pushNamed(context, 'users/show',
             arguments: await User.findById(comment.userId));
         }
       ),
-      title: Row(
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Expanded(child: Text(comment.text)),
-          IconButton(
-            icon: Icon(Icons.favorite_border), //TODO: check if liked
-            onPressed: () {
-              //TODO: show popup menu
-            },
-          )
+          nickname(comment.userId),
+          Text(comment.text),
         ],
       ),
       children: [
-        CommentUploadView("Reply", comment.id, "Comment"),
-        FutureBuilder<Comment>(
-          future: Comment.findById(comment.id),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) debugPrint(snapshot.error.toString());
-            if (snapshot.hasData) {
-              return Column(
-                children: snapshot.data.comments.map((i) => UserCommentView(i)).toList(),
-              );
-            }
-            else return CircularProgressIndicator();
-          }
-        )
+        Padding(
+          padding: const EdgeInsets.only(left: 32.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  IconButton( //TODO: replace with a stateful widget
+                    icon: Icon(Icons.favorite_border, size: 16),
+                    onPressed: (){},
+                  ),
+                  CommentUploadView("Reply", comment.id, "Comment"),
+                ],
+              ),
+              FutureBuilder<Comment>(
+                  future: Comment.findById(comment.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) debugPrint(snapshot.error.toString());
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: snapshot.data.comments.map((i) => UserCommentView(i)).toList(),
+                      );
+                    }
+                    else return CircularProgressIndicator();
+                  }
+              )
+            ],
+          ),
+        ),
       ],
     );
   }

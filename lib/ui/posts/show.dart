@@ -183,6 +183,7 @@ class PaginatedCommentsState extends State<PaginatedComments> {
         }
       },
       controller: _scrollController,
+      physics: BouncingScrollPhysics(),
     );
   }
 
