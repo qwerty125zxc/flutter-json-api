@@ -296,56 +296,114 @@ class CommentUploadViewState extends State<CommentUploadView> {
 
   @override
   Widget build(BuildContext context) {
-    return edit
-        ? Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Expanded(
-                child: TextField(
-                    textCapitalization: TextCapitalization.sentences,
-                    controller: _controller,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.newline,
-                    decoration: InputDecoration(hintText: '${widget.label}...'),
-                    maxLines: null,
-                    autofocus: true),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.send,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () async {
-                  if (_controller.text.isNotEmpty) {
-                    Fluttertoast.showToast(msg: "Sending...");
-                    var response = await Comment.create(
-                        objectId, objectType, _controller.text);
-                    debugPrint('COMMENT -- ${response.body}');
-                    debugPrint('COMMENT -- ${response.statusCode}');
-                    if (response.statusCode == 201) {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text("Comment uploaded successfully.")));
-                      setState(() {
-                        edit = false;
-                      });
-                    }
-                  }
-                },
-              )
-            ],
-          )
-        : RaisedButton(
-            child: Text(widget.label),
-            onPressed: () {
-              if (User.signedIn) {
-                setState(() {
-                  edit = true;
-                });
-              } else
-                Fluttertoast.showToast(msg: "You need to log in to do this");
+    if (edit) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: _controller,
+              keyboardType: TextInputType.multiline,
+              textInputAction: TextInputAction.newline,
+              decoration: InputDecoration(hintText: '${widget.label}...'),
+              maxLines: null,
+              autofocus: true,
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.send,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () async {
+              if (_controller.text.isNotEmpty) {
+                Fluttertoast.showToast(msg: "Sending...");
+                var response = await Comment.create(
+                    objectId, objectType, _controller.text);
+                debugPrint('COMMENT -- ${response.body}');
+                debugPrint('COMMENT -- ${response.statusCode}');
+                if (response.statusCode == 201) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text("Comment uploaded successfully.")));
+                  setState(() {
+                    edit = false;
+                  });
+                }
+              }
             },
-          );
+          )
+        ],
+      );
+    } else {
+      return RaisedButton(
+        child: Text(widget.label),
+        onPressed: () {
+          if (User.signedIn) {
+            if (objectType != "Comment") {
+              setState(() {
+                edit = true;
+              });
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (buildContext) {
+                    return SimpleDialog(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Expanded(
+                                child: TextField(
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  controller: _controller,
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: TextInputAction.newline,
+                                  decoration: InputDecoration(
+                                      hintText: '${widget.label}...'),
+                                  maxLines: null,
+                                  autofocus: true,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.send,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                onPressed: () async {
+                                  if (_controller.text.isNotEmpty) {
+                                    Fluttertoast.showToast(msg: "Sending...");
+                                    var response = await Comment.create(
+                                        objectId, objectType, _controller.text);
+                                    debugPrint('COMMENT -- ${response.body}');
+                                    debugPrint(
+                                        'COMMENT -- ${response.statusCode}');
+                                    if (response.statusCode == 201) {
+                                      Scaffold.of(context).showSnackBar(SnackBar(
+                                          content: Text(
+                                              "Comment uploaded successfully.")));
+                                      Navigator.pop(context);
+                                    }
+                                  }
+                                },
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  });
+            }
+          } else
+            Fluttertoast.showToast(msg: "You need to log in to do this");
+        },
+      );
+    }
   }
 }
 
@@ -392,7 +450,8 @@ class UserCommentViewState extends State<UserCommentView> {
       future: User.findById(userId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Text(snapshot.data.nickname, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold));
+          return Text(snapshot.data.nickname,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold));
         } else {
           return Container(width: 0.0, height: 0.0);
         }
@@ -409,12 +468,11 @@ class UserCommentViewState extends State<UserCommentView> {
         });
       },
       leading: GestureDetector(
-        child: avatar(comment.userId),
-        onTap: () async {
-          await Navigator.pushNamed(context, 'users/show',
-            arguments: await User.findById(comment.userId));
-        }
-      ),
+          child: avatar(comment.userId),
+          onTap: () async {
+            await Navigator.pushNamed(context, 'users/show',
+                arguments: await User.findById(comment.userId));
+          }),
       title: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,9 +489,13 @@ class UserCommentViewState extends State<UserCommentView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  IconButton( //TODO: replace with a stateful widget
-                    icon: Icon(Icons.favorite_border, size: 16),
-                    onPressed: (){},
+                  FutureBuilder<Comment>(
+                    future: Comment.findById(comment.id),
+                    builder: (context, snapshot) {
+                      return snapshot.hasData
+                          ? CommentLike(snapshot.data)
+                          : Container(width: 0, height: 0);
+                    }
                   ),
                   CommentUploadView("Reply", comment.id, "Comment"),
                 ],
@@ -441,18 +503,61 @@ class UserCommentViewState extends State<UserCommentView> {
               FutureBuilder<Comment>(
                   future: Comment.findById(comment.id),
                   builder: (context, snapshot) {
-                    if (snapshot.hasError) debugPrint(snapshot.error.toString());
+                    if (snapshot.hasError)
+                      debugPrint(snapshot.error.toString());
                     if (snapshot.hasData) {
                       return Column(
-                        children: snapshot.data.comments.map((i) => UserCommentView(i)).toList(),
+                        children: snapshot.data.comments
+                            .map((i) => UserCommentView(i))
+                            .toList(),
                       );
-                    }
-                    else return CircularProgressIndicator();
-                  }
-              )
+                    } else
+                      return CircularProgressIndicator();
+                  })
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+class CommentLike extends StatefulWidget {
+  final Comment comment;
+  CommentLike(this.comment);
+
+  @override
+  _CommentLikeState createState() => _CommentLikeState();
+}
+
+class _CommentLikeState extends State<CommentLike> {
+  bool liked = false;
+  int count = 0;
+
+  @override
+  void initState() {
+    liked = widget.comment.liked;
+    count = widget.comment.likesCount;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        IconButton(
+          icon: liked
+              ? Icon(Icons.favorite, size: 16)
+              : Icon(Icons.favorite_border, size: 16),
+          onPressed: () {
+            setState(() {
+              liked ? count-- : count++;
+              liked = !liked;
+            });
+            widget.comment.like();
+          },
+        ),
+        Text('$count', style: TextStyle(fontSize: 12))
       ],
     );
   }

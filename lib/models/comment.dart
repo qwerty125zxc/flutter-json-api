@@ -6,8 +6,10 @@ class Comment {
   String text, objectType, created, updated;
   int id, userId, objectId;
   List<Comment> comments;
+  int likesCount;
+  List<Like> likes;
 
-  Comment({this.text, this.id, this.userId, this.objectId, this.objectType, this.created, this.updated, this.comments});
+  Comment({this.text, this.id, this.userId, this.objectId, this.objectType, this.created, this.updated, this.comments, this.likes, this.likesCount});
 
   factory Comment.fromJson(Map json) {
     return Comment(
@@ -36,10 +38,45 @@ class Comment {
     var response = await http.get(url);
     var json = jsonDecode(response.body);
 
-    var comment = Comment.fromJson(json);
+    var comment = Comment.fromJson(json['comment']);
     var comments = json['comments'] as List;
     comment.comments = comments.map((i) => Comment.fromJson(i)).toList();
 
+    var list = json['likes'] as List;
+    List<Like> likesList = list.map((i) => Like.fromJson(i)).toList();
+    comment.likes = likesList;
+
+    comment.likesCount = json['likes_count'] as int;
+
     return comment;
+  }
+
+  bool get liked {
+    if (User.signedIn) {
+      for (var i in likes) {
+        if (i.userId == User.current.id)
+          return true;
+      }
+    }
+    return false;
+  }
+
+  like() async {
+    return await http.post('https://milioners.herokuapp.com/api/v1/comments/$id/likes', headers: User.headers);
+  }
+}
+
+class Like {
+  int id, userId, objectId;
+  String objectType;
+  Like(this.id, this.userId, this.objectId, this.objectType);
+
+  factory Like.fromJson(Map json) {
+    return Like(
+      json['id'],
+      json['user_id'],
+      json['object_id'],
+      json['object_type']
+    );
   }
 }
