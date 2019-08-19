@@ -586,7 +586,7 @@ class UserCommentViewState extends State<UserCommentView> {
                                   debugPrint('COMMENT -- ${response.body}');
                                   debugPrint(
                                       'COMMENT -- ${response.statusCode}');
-                                  if (response.statusCode == 200) {
+                                  if (response.statusCode == 201) {
                                     Scaffold.of(context).showSnackBar(SnackBar(
                                         content: Text(
                                             "Comment edited successfully.")));

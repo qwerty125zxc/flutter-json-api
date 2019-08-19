@@ -66,7 +66,10 @@ class Comment {
   }
 
   Future<http.Response> edit(String text) async{
-    
+    return await http.put('https://milioners.herokuapp.com/api/v1/comments/$id', headers: User.headers, body:
+    jsonEncode(
+      { 'text': text }
+    ));
   }
   Future<http.Response> delete() async{
     return http.delete('https://milioners.herokuapp.com/api/v1/comments/$id)', headers: User.headers);
