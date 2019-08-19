@@ -64,6 +64,13 @@ class Comment {
   like() async {
     return await http.post('https://milioners.herokuapp.com/api/v1/comments/$id/likes', headers: User.headers);
   }
+
+  Future<http.Response> edit(String text) async{
+    
+  }
+  Future<http.Response> delete() async{
+    return http.delete('https://milioners.herokuapp.com/api/v1/comments/$id)', headers: User.headers);
+  }
 }
 
 class Like {

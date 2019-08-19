@@ -406,6 +406,7 @@ class CommentUploadViewState extends State<CommentUploadView> {
     }
   }
 }
+enum PopupMenu { edit, delete, report }
 
 class UserCommentView extends StatefulWidget {
   final Comment comment;
@@ -498,6 +499,7 @@ class UserCommentViewState extends State<UserCommentView> {
                     }
                   ),
                   CommentUploadView("Reply", comment.id, "Comment"),
+                  popupButton(comment),
                 ],
               ),
               FutureBuilder<Comment>(
@@ -518,6 +520,132 @@ class UserCommentViewState extends State<UserCommentView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget popupButton(Comment comment) {
+    var _controller = TextEditingController(text: comment.text);
+    return PopupMenuButton<PopupMenu>(
+      itemBuilder: (context) => User.current.id == comment.userId ? <PopupMenuEntry<PopupMenu>>[
+        const PopupMenuItem(
+          value: PopupMenu.edit,
+          child: Text('Edit'),
+        ),
+        const PopupMenuItem(
+          value: PopupMenu.delete,
+          child: Text('Delete'),
+        ),
+        const PopupMenuItem(
+          value: PopupMenu.report,
+          child: Text('Report'),
+        ),
+      ]
+      :
+      <PopupMenuEntry<PopupMenu>>[
+        const PopupMenuItem(
+          value: PopupMenu.report,
+          child: Text('Report'),
+        )
+      ],
+      onSelected: (result) {
+        switch (result) {
+          case PopupMenu.edit:
+            showDialog(
+                context: context,
+                builder: (buildContext) {
+                  return SimpleDialog(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Expanded(
+                              child: TextField(
+                                textCapitalization:
+                                TextCapitalization.sentences,
+                                controller: _controller,
+                                keyboardType: TextInputType.multiline,
+                                textInputAction: TextInputAction.newline,
+                                decoration: InputDecoration(
+                                    hintText: 'Edit...'),
+                                maxLines: null,
+                                autofocus: true,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.check,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () async {
+                                if (_controller.text.isNotEmpty) {
+                                  Fluttertoast.showToast(msg: "Sending...");
+                                  var response = await comment.edit(_controller.text);
+                                  debugPrint('COMMENT -- ${response.body}');
+                                  debugPrint(
+                                      'COMMENT -- ${response.statusCode}');
+                                  if (response.statusCode == 200) {
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                        content: Text(
+                                            "Comment edited successfully.")));
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  );
+                }
+            );
+            break;
+          case PopupMenu.delete:
+            showDialog(
+                context: context,
+                builder: (buildContext) {
+                  return AlertDialog(
+                    title: Text('Are you sure?'),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("YES"),
+                        onPressed: () async{
+                          var response = await comment.delete();
+                          debugPrint('${response.body}');
+                          debugPrint('${response.statusCode}');
+                          if (response.statusCode == 200) {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    "Comment deleted successfully.")));
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('NO'),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    ],
+                  );
+                }
+            );
+            break;
+          case PopupMenu.report:
+            showDialog(
+                context: context,
+                builder: (buildContext) {
+                  return SimpleDialog(
+                    children: <Widget>[
+                      Text('This comment was(not) reported successfully')
+                    ],
+                  );
+                }
+            );
+        }
+      },
     );
   }
 }
@@ -562,3 +690,4 @@ class _CommentLikeState extends State<CommentLike> {
     );
   }
 }
+
